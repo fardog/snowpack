@@ -59,6 +59,7 @@
     <Compile Include="FDGlacier.cs" />
     <Compile Include="FDFileEncryption.cs" />
     <Compile Include="FDDataStore.cs" />
+    <Compile Include="FDUserSettings.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

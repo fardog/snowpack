@@ -23,7 +23,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription("An Amazon Glacier client and GUI")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Far Dog LLC")]
-[assembly: AssemblyProduct("")]
+[assembly: AssemblyProduct("snowpack")]
 [assembly: AssemblyCopyright("2012 Far Dog LLC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

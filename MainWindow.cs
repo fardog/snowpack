@@ -28,10 +28,15 @@ public partial class MainWindow: Gtk.Window
 	private string currentDescription;
 	private FDGlacier glacier;
 	private System.ComponentModel.BackgroundWorker uploadWorker;
+	private FDUserSettings UserSettings;
+	private FDDataStore DataStore;
 	
 	public MainWindow (): base (Gtk.WindowType.Toplevel)
 	{
 		Build ();
+		UserSettings = new FDUserSettings();
+		DataStore = new FDDataStore(UserSettings.CurrentDataStore);
+		
 	}
 	
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)

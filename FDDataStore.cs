@@ -20,8 +20,9 @@ namespace snowpack
 {
 	public class FDDataStore
 	{
-		public FDDataStore ()
+		public FDDataStore (string DataStore)
 		{
+			
 		}
 	}
 }
