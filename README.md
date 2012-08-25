@@ -16,6 +16,18 @@ Right now, snowpack can store any file to Glacier, and stores the ID of any
 archived file to an SQLite DB for later retrieval. It stores full directory  
 structure, and will include a tree browser for requesting restores.
 
+Misc
+----
+
+This requires an App.config file with the following properties in the  
+*appSettings* section:
+
+ -	*AWSAccessKey*
+ -	*AWSSecretKey*
+ -	*AWSRegion* (e.g. "us-west-2", "us-east-1", etc.)
+ -	*GlacierVaultName*
+
+
 Warranty
 --------
 
