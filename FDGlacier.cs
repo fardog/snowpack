@@ -84,7 +84,6 @@ namespace snowpack
 		public void uploadFile(string filePath)
 		{
 			result = transferManager.Upload (this.vaultName, this.archiveDescription, filePath, this.options);
-			System.Console.WriteLine (result.ArchiveId);
 		}
 		
 		public void cancelUpload()

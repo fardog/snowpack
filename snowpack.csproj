@@ -44,6 +44,7 @@
     </Reference>
     <Reference Include="Mono.Data.Sqlite" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -60,6 +61,7 @@
     <Compile Include="FDFileEncryption.cs" />
     <Compile Include="FDDataStore.cs" />
     <Compile Include="FDUserSettings.cs" />
+    <Compile Include="FDChecksum.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

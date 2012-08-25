@@ -26,8 +26,13 @@ public partial class MainWindow: Gtk.Window
 {	
 	private string currentFile;
 	private string currentDescription;
-	private FDGlacier glacier;
+	private string currentChecksum;
+	private string currentArchiveId;
+	private FileAttributes currentAttributes;
+	private FileInfo currentInfo;
 	private System.ComponentModel.BackgroundWorker uploadWorker;
+	private System.ComponentModel.BackgroundWorker checksumWorker;
+	private System.ComponentModel.BackgroundWorker waitWorker;
 	private FDUserSettings UserSettings;
 	private FDDataStore DataStore;
 	
@@ -53,11 +58,12 @@ public partial class MainWindow: Gtk.Window
 		} 
 		
 		//see if we have a file or a directory selected, and set interface accordingly
-		FileAttributes attr = File.GetAttributes(fileChooser.Filename);
-		if ((attr & FileAttributes.Directory) == FileAttributes.Directory) {
+		currentAttributes = File.GetAttributes(fileChooser.Filename);
+		if ((currentAttributes & FileAttributes.Directory) == FileAttributes.Directory) {
 			buttonUpload.Label = "Open";
 			buttonUpload.Sensitive = true;
 		} else {
+			currentInfo = new FileInfo(fileChooser.Filename);
 			buttonUpload.Label = "Upload";
 			buttonUpload.Sensitive = true;
 		}
@@ -96,14 +102,32 @@ public partial class MainWindow: Gtk.Window
 	{
 		this.currentFile = fileName;
 		this.currentDescription = fileDescription;
+		
+		checksumWorker = new System.ComponentModel.BackgroundWorker();
+		checksumWorker.DoWork += new DoWorkEventHandler(_checksumWork);
+		checksumWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_checksumComplete);
+		checksumWorker.WorkerSupportsCancellation = false;
 
 		uploadWorker = new System.ComponentModel.BackgroundWorker();
 		uploadWorker.DoWork += new DoWorkEventHandler (_uploadFileWork);
 		uploadWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_uploadFileCompleted);
-		uploadWorker.WorkerSupportsCancellation = true;
+		uploadWorker.WorkerSupportsCancellation = false;
+		
+		waitWorker = new System.ComponentModel.BackgroundWorker();
+		waitWorker.DoWork += new DoWorkEventHandler (_waitWork);
+		waitWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_waitComplete);
+		waitWorker.WorkerSupportsCancellation = false;
+		
+		if(!checksumWorker.IsBusy) {
+			checksumWorker.RunWorkerAsync(fileName); //calculate the file's checksum
+		}
 		
 		if(!uploadWorker.IsBusy) {
 			uploadWorker.RunWorkerAsync(fileName); //launch the upload
+		}
+		
+		if(!waitWorker.IsBusy) {
+			waitWorker.RunWorkerAsync(true); //wait on threads
 		}
 	}
 
@@ -129,16 +153,51 @@ public partial class MainWindow: Gtk.Window
 		{
 			statusBar.Push (statusBar.GetContextId("Success"), "Successfully uploaded: " + System.IO.Path.GetFileName(currentFile));
 		}
-
-		buttonUpload.Sensitive = true;
-		buttonCancel.Sensitive = false;
-		fileChooser.Sensitive = true;
-		progressBar.Fraction = 0;
+		Amazon.Glacier.Transfer.UploadResult result = (Amazon.Glacier.Transfer.UploadResult)e.Result;
+		currentArchiveId = result.ArchiveId;
 	}
 	
 	private void _uploadFileProgress(object sender, Amazon.Runtime.StreamTransferProgressArgs e) 
 	{
 		progressBar.Fraction = (float)e.PercentDone / 100;
+	}
+	
+	private void _checksumWork(object sender, DoWorkEventArgs e)
+	{
+		BackgroundWorker worker = sender as BackgroundWorker;
+		
+		e.Result = _initiateChecksum((string)e.Argument, worker, e);
+	}
+	
+	private void _checksumComplete (object sender, RunWorkerCompletedEventArgs e)
+	{
+		currentChecksum = (string)e.Result;
+	}
+	
+	private void _waitWork (object sender, DoWorkEventArgs e)
+	{
+		//BackgroundWorker worker = sender as BackgroundWorker;
+		Thread.Sleep (250); //wait in case other threads haven't started
+		
+		while(uploadWorker.IsBusy || checksumWorker.IsBusy)
+		{
+			System.Console.WriteLine("Waiting");
+			Thread.Sleep(1000);
+		}
+	}
+	
+	private void _waitComplete (object sender, RunWorkerCompletedEventArgs e)
+	{
+		buttonUpload.Sensitive = true;
+		buttonCancel.Sensitive = false;
+		fileChooser.Sensitive = true;
+		progressBar.Fraction = 0;
+		System.Console.WriteLine("File: "+currentFile);
+		System.Console.WriteLine("Checksum: "+currentChecksum);
+		System.Console.WriteLine("ArchiveId: "+currentArchiveId);
+		
+		
+		DataStore.InsertFile(currentFile, currentChecksum, currentInfo.Length, currentInfo.LastWriteTimeUtc, currentArchiveId);
 	}
 
 	private Amazon.Glacier.Transfer.UploadResult _initiateUpload (string file, BackgroundWorker worker, DoWorkEventArgs e)
@@ -146,12 +205,24 @@ public partial class MainWindow: Gtk.Window
 		if (String.IsNullOrEmpty (file)) {
 			throw new ArgumentException ("A file wasn't selected for upload.");
 		}
-		glacier = new FDGlacier ();
+		FDGlacier glacier = new FDGlacier ();
 		glacier.archiveDescription = currentDescription;
 		glacier.setCallback(this._uploadFileProgress);
 		glacier.uploadFile (currentFile);
 
 		return glacier.getResult ();
+	}
+	
+	private string _initiateChecksum (string file, BackgroundWorker worker, DoWorkEventArgs e)
+	{
+		if(String.IsNullOrEmpty (file)) {
+			throw new ArgumentException ("A file wasn't selected for checksum.");
+		}
+		
+		FDChecksum fileChecksum = new FDChecksum(file);
+		fileChecksum.CalculateChecksum();
+		
+		return fileChecksum.checksum;
 	}
 
 	protected void onCancelClicked (object sender, EventArgs e)
