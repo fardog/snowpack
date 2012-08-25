@@ -97,6 +97,21 @@ namespace snowpack
 			return retvalue;
 		}
 		
+		public string CheckExists(string checksum, long size)
+		{
+			IDbCommand checkFileExists = dbcon.CreateCommand();
+			
+			checkFileExists.CommandText = 
+				"SELECT `file_archiveid` from `file` WHERE " +
+				"`file_checksum` = \"" + checksum + "\" " +
+				"AND `file_size` = " + size.ToString() + " LIMIT 1;";
+			
+			IDataReader reader = checkFileExists.ExecuteReader();
+			
+			if(reader.Read ()) return reader.GetString (0);
+			return null;
+		}
+		
 		public int InsertFile(string path, string checksum, long size, DateTime modified, string archiveId)
 		{
 			//first we need to create the directory tree in SQL if it doesn't exist yet
@@ -104,6 +119,16 @@ namespace snowpack
 			string[] directories = pathDirectories.Split(Path.DirectorySeparatorChar);
 			
 			Int64 parent = insertDirectoryTree(directories); //creates directory tree and gets parent id
+			
+			//we need to verify that the exact file isn't already inserted
+			IDbCommand checkFile = dbcon.CreateCommand();
+			checkFile.CommandText = 
+				"SELECT `file_id` FROM `file` WHERE " +
+				"`file_name` = \"" + Path.GetFileName(path) + "\" " +
+				"AND `file_checksum` = \"" + checksum + "\" " +
+				"AND `file_directory` = " + parent.ToString() + ";";
+			IDataReader reader = checkFile.ExecuteReader();
+			if(reader.Read ()) return 0; //the file already exists in that directory
 			
 			//now we have the parent, so insert the file into db
 			IDbCommand insertFile = dbcon.CreateCommand();

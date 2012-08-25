@@ -8,8 +8,13 @@ Licensed under [GPLv3](http://www.gnu.org/licenses/gpl-3.0.txt)
 Intro
 -----
 
-**snowpack** is (someday) a complete GUI client and backup solution for Amazon Glacier. Currently, it is a very early test
-while I bring my C# skills back up to current. Please don't use it until then, you will be disappointed.
+**snowpack** is (someday) a complete GUI client and backup solution for  
+Amazon Glacier. Currently, it is a very early test while I bring my C# skills  
+back up to current. Please don't use it until then, you will be disappointed.
+
+Right now, snowpack can store any file to Glacier, and stores the ID of any  
+archived file to an SQLite DB for later retrieval. It stores full directory  
+structure, and will include a tree browser for requesting restores.
 
 Warranty
 --------

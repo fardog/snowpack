@@ -32,7 +32,6 @@ public partial class MainWindow: Gtk.Window
 	private FileInfo currentInfo;
 	private System.ComponentModel.BackgroundWorker uploadWorker;
 	private System.ComponentModel.BackgroundWorker checksumWorker;
-	private System.ComponentModel.BackgroundWorker waitWorker;
 	private FDUserSettings UserSettings;
 	private FDDataStore DataStore;
 	
@@ -88,7 +87,6 @@ public partial class MainWindow: Gtk.Window
 			fileChooser.SetCurrentFolder(fileChooser.Filename);
 		} else { //we're on a file, start the upload
 			//set our UI
-			statusBar.Push(statusBar.GetContextId("Upload"), "Uploading: " + System.IO.Path.GetFileName(fileChooser.Filename) + "…");
 			buttonUpload.Sensitive = false;
 			buttonCancel.Sensitive = true;
 			fileChooser.Sensitive = false;
@@ -107,27 +105,10 @@ public partial class MainWindow: Gtk.Window
 		checksumWorker.DoWork += new DoWorkEventHandler(_checksumWork);
 		checksumWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_checksumComplete);
 		checksumWorker.WorkerSupportsCancellation = false;
-
-		uploadWorker = new System.ComponentModel.BackgroundWorker();
-		uploadWorker.DoWork += new DoWorkEventHandler (_uploadFileWork);
-		uploadWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_uploadFileCompleted);
-		uploadWorker.WorkerSupportsCancellation = false;
-		
-		waitWorker = new System.ComponentModel.BackgroundWorker();
-		waitWorker.DoWork += new DoWorkEventHandler (_waitWork);
-		waitWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_waitComplete);
-		waitWorker.WorkerSupportsCancellation = false;
 		
 		if(!checksumWorker.IsBusy) {
+			statusBar.Push (statusBar.GetContextId("Checksumming"), "Checksumming file: " + System.IO.Path.GetFileName(currentFile));
 			checksumWorker.RunWorkerAsync(fileName); //calculate the file's checksum
-		}
-		
-		if(!uploadWorker.IsBusy) {
-			uploadWorker.RunWorkerAsync(fileName); //launch the upload
-		}
-		
-		if(!waitWorker.IsBusy) {
-			waitWorker.RunWorkerAsync(true); //wait on threads
 		}
 	}
 
@@ -151,10 +132,16 @@ public partial class MainWindow: Gtk.Window
 		}
 		else //We had some success right here!
 		{
+			//save our result to the database
+			Amazon.Glacier.Transfer.UploadResult result = (Amazon.Glacier.Transfer.UploadResult)e.Result;
+			currentArchiveId = result.ArchiveId;
+		
+			DataStore.InsertFile(currentFile, currentChecksum, currentInfo.Length, currentInfo.LastWriteTimeUtc, currentArchiveId);
+			
+			//reset UI
 			statusBar.Push (statusBar.GetContextId("Success"), "Successfully uploaded: " + System.IO.Path.GetFileName(currentFile));
+			this.resetUI();
 		}
-		Amazon.Glacier.Transfer.UploadResult result = (Amazon.Glacier.Transfer.UploadResult)e.Result;
-		currentArchiveId = result.ArchiveId;
 	}
 	
 	private void _uploadFileProgress(object sender, Amazon.Runtime.StreamTransferProgressArgs e) 
@@ -172,32 +159,27 @@ public partial class MainWindow: Gtk.Window
 	private void _checksumComplete (object sender, RunWorkerCompletedEventArgs e)
 	{
 		currentChecksum = (string)e.Result;
-	}
-	
-	private void _waitWork (object sender, DoWorkEventArgs e)
-	{
-		//BackgroundWorker worker = sender as BackgroundWorker;
-		Thread.Sleep (250); //wait in case other threads haven't started
 		
-		while(uploadWorker.IsBusy || checksumWorker.IsBusy)
+		//Verify checksum/file not already present
+		string archiveId = DataStore.CheckExists(currentChecksum, currentInfo.Length);
+		if(!String.IsNullOrEmpty(archiveId)) //the file's been uploaded before
 		{
-			System.Console.WriteLine("Waiting");
-			Thread.Sleep(1000);
+			DataStore.InsertFile (currentFile, currentChecksum, currentInfo.Length, currentInfo.LastWriteTimeUtc, archiveId);
+			statusBar.Push (statusBar.GetContextId("Exists"), "File already uploaded: " + System.IO.Path.GetFileName(currentFile));
+			resetUI();
+			return;
 		}
-	}
-	
-	private void _waitComplete (object sender, RunWorkerCompletedEventArgs e)
-	{
-		buttonUpload.Sensitive = true;
-		buttonCancel.Sensitive = false;
-		fileChooser.Sensitive = true;
-		progressBar.Fraction = 0;
-		System.Console.WriteLine("File: "+currentFile);
-		System.Console.WriteLine("Checksum: "+currentChecksum);
-		System.Console.WriteLine("ArchiveId: "+currentArchiveId);
 		
+		//now that we've verified the checksum, upload the file
+		uploadWorker = new System.ComponentModel.BackgroundWorker();
+		uploadWorker.DoWork += new DoWorkEventHandler (_uploadFileWork);
+		uploadWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_uploadFileCompleted);
+		uploadWorker.WorkerSupportsCancellation = false;
 		
-		DataStore.InsertFile(currentFile, currentChecksum, currentInfo.Length, currentInfo.LastWriteTimeUtc, currentArchiveId);
+		if(!uploadWorker.IsBusy) {
+			statusBar.Push (statusBar.GetContextId("Uploading"), "Uploading file: " + System.IO.Path.GetFileName(currentFile));
+			uploadWorker.RunWorkerAsync(currentFile); //launch the upload
+		}
 	}
 
 	private Amazon.Glacier.Transfer.UploadResult _initiateUpload (string file, BackgroundWorker worker, DoWorkEventArgs e)
@@ -229,11 +211,12 @@ public partial class MainWindow: Gtk.Window
 	{
 		System.Console.WriteLine ("I don't work! hahahaha whoops");
 	}
-
-	public void onUploadFinish (object obj, EventArgs args)
+	
+	private void resetUI()
 	{
-		fileChooser.Sensitive = true;
+		buttonUpload.Sensitive = true;
 		buttonCancel.Sensitive = false;
-		statusBar.Pop (statusBar.GetContextId("Upload"));
+		fileChooser.Sensitive = true;
+		progressBar.Fraction = 0;
 	}
 }
