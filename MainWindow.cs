@@ -101,6 +101,11 @@ public partial class MainWindow: Gtk.Window
 		this.currentFile = fileName;
 		this.currentDescription = fileDescription;
 		
+		if(checksumWorker != null) {
+			checksumWorker.Dispose ();
+			checksumWorker = null;
+		}
+		
 		checksumWorker = new System.ComponentModel.BackgroundWorker();
 		checksumWorker.DoWork += new DoWorkEventHandler(_checksumWork);
 		checksumWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_checksumComplete);
@@ -168,6 +173,11 @@ public partial class MainWindow: Gtk.Window
 			statusBar.Push (statusBar.GetContextId("Exists"), "File already uploaded: " + System.IO.Path.GetFileName(currentFile));
 			resetUI();
 			return;
+		}
+		
+		if(uploadWorker != null) {
+			uploadWorker.Dispose ();
+			uploadWorker = null;
 		}
 		
 		//now that we've verified the checksum, upload the file

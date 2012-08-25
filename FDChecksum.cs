@@ -54,6 +54,8 @@ namespace snowpack
 			
 			checksum = sb.ToString();
 			running = false;
+			
+			file.Close ();
 		}
 	}
 }
