@@ -11,6 +11,7 @@ public partial class MainWindow
 	private global::Gtk.Table table3;
 	private global::Gtk.Alignment alignment4;
 	private global::Gtk.Alignment alignment5;
+	private global::Gtk.Button buttonArchive;
 	private global::Gtk.Button buttonCancel;
 	private global::Gtk.Button buttonUpload;
 	private global::Gtk.Statusbar statusBar;
@@ -59,9 +60,17 @@ public partial class MainWindow
 		// Container child table3.Gtk.Table+TableChild
 		this.alignment5 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 		this.alignment5.Name = "alignment5";
+		// Container child alignment5.Gtk.Container+ContainerChild
+		this.buttonArchive = new global::Gtk.Button ();
+		this.buttonArchive.CanFocus = true;
+		this.buttonArchive.Name = "buttonArchive";
+		this.buttonArchive.UseUnderline = true;
+		this.buttonArchive.Label = global::Mono.Unix.Catalog.GetString ("Archive Browser");
+		this.alignment5.Add (this.buttonArchive);
 		this.table3.Add (this.alignment5);
-		global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table3 [this.alignment5]));
-		w4.YOptions = ((global::Gtk.AttachOptions)(4));
+		global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table3 [this.alignment5]));
+		w5.XOptions = ((global::Gtk.AttachOptions)(4));
+		w5.YOptions = ((global::Gtk.AttachOptions)(4));
 		// Container child table3.Gtk.Table+TableChild
 		this.buttonCancel = new global::Gtk.Button ();
 		this.buttonCancel.Sensitive = false;
@@ -70,11 +79,11 @@ public partial class MainWindow
 		this.buttonCancel.UseUnderline = true;
 		this.buttonCancel.Label = global::Mono.Unix.Catalog.GetString ("Cancel");
 		this.table3.Add (this.buttonCancel);
-		global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table3 [this.buttonCancel]));
-		w5.LeftAttach = ((uint)(2));
-		w5.RightAttach = ((uint)(3));
-		w5.XOptions = ((global::Gtk.AttachOptions)(4));
-		w5.YOptions = ((global::Gtk.AttachOptions)(4));
+		global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table3 [this.buttonCancel]));
+		w6.LeftAttach = ((uint)(2));
+		w6.RightAttach = ((uint)(3));
+		w6.XOptions = ((global::Gtk.AttachOptions)(4));
+		w6.YOptions = ((global::Gtk.AttachOptions)(4));
 		// Container child table3.Gtk.Table+TableChild
 		this.buttonUpload = new global::Gtk.Button ();
 		this.buttonUpload.Sensitive = false;
@@ -83,16 +92,16 @@ public partial class MainWindow
 		this.buttonUpload.UseUnderline = true;
 		this.buttonUpload.Label = global::Mono.Unix.Catalog.GetString ("Upload");
 		this.table3.Add (this.buttonUpload);
-		global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table3 [this.buttonUpload]));
-		w6.LeftAttach = ((uint)(3));
-		w6.RightAttach = ((uint)(4));
-		w6.XOptions = ((global::Gtk.AttachOptions)(4));
-		w6.YOptions = ((global::Gtk.AttachOptions)(4));
+		global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table3 [this.buttonUpload]));
+		w7.LeftAttach = ((uint)(3));
+		w7.RightAttach = ((uint)(4));
+		w7.XOptions = ((global::Gtk.AttachOptions)(4));
+		w7.YOptions = ((global::Gtk.AttachOptions)(4));
 		this.vbox1.Add (this.table3);
-		global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.table3]));
-		w7.Position = 1;
-		w7.Expand = false;
-		w7.Fill = false;
+		global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.table3]));
+		w8.Position = 1;
+		w8.Expand = false;
+		w8.Fill = false;
 		// Container child vbox1.Gtk.Box+BoxChild
 		this.statusBar = new global::Gtk.Statusbar ();
 		this.statusBar.Name = "statusBar";
@@ -103,15 +112,15 @@ public partial class MainWindow
 		this.progressBar.WidthRequest = 100;
 		this.progressBar.Name = "progressBar";
 		this.statusBar.Add (this.progressBar);
-		global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.statusBar [this.progressBar]));
-		w8.Position = 1;
-		w8.Expand = false;
-		this.vbox1.Add (this.statusBar);
-		global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.statusBar]));
-		w9.PackType = ((global::Gtk.PackType)(1));
-		w9.Position = 2;
+		global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.statusBar [this.progressBar]));
+		w9.Position = 1;
 		w9.Expand = false;
-		w9.Fill = false;
+		this.vbox1.Add (this.statusBar);
+		global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.statusBar]));
+		w10.PackType = ((global::Gtk.PackType)(1));
+		w10.Position = 2;
+		w10.Expand = false;
+		w10.Fill = false;
 		this.Add (this.vbox1);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();
@@ -124,5 +133,7 @@ public partial class MainWindow
 		this.fileChooser.FileActivated += new global::System.EventHandler (this.onFileActivated);
 		this.buttonUpload.Clicked += new global::System.EventHandler (this.onUploadClicked);
 		this.buttonCancel.Clicked += new global::System.EventHandler (this.onCancelClicked);
+		this.buttonArchive.Activated += new global::System.EventHandler (this.onArchiveActivated);
+		this.buttonArchive.Clicked += new global::System.EventHandler (this.onArchiveClicked);
 	}
 }

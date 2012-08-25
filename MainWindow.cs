@@ -219,4 +219,15 @@ public partial class MainWindow: Gtk.Window
 		fileChooser.Sensitive = true;
 		progressBar.Fraction = 0;
 	}
+
+	protected void onArchiveActivated (object sender, System.EventArgs e)
+	{
+		this.onArchiveClicked(sender, e);
+	}
+
+	protected void onArchiveClicked (object sender, System.EventArgs e)
+	{
+		ArchiveBrowser browser = new ArchiveBrowser(UserSettings.CurrentDataStore);
+		browser.Show ();
+	}
 }
