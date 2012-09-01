@@ -23,8 +23,8 @@ namespace snowpack
 		public static void Main (string[] args)
 		{
 			Application.Init ();
-			MainWindow win = new MainWindow ();
-			win.Show ();
+			FDQueueView view = new FDQueueView();
+			view.Show ();
 			Application.Run ();
 		}
 	}

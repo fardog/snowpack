@@ -83,7 +83,14 @@ namespace snowpack
 		
 		public void uploadFile(string filePath)
 		{
-			result = transferManager.Upload (this.vaultName, this.archiveDescription, filePath, this.options);
+			try
+			{
+				result = transferManager.Upload (this.vaultName, this.archiveDescription, filePath, this.options);
+			}
+			catch(Exception e)
+			{
+				System.Console.WriteLine("Error uploading file: " + e.Message);
+			}
 		}
 		
 		public void cancelUpload()

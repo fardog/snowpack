@@ -52,7 +52,6 @@ namespace snowpack
 			
 			CurrentDataStore = DataStorePath + System.IO.Path.DirectorySeparatorChar + DataStoreFile;
 			
-			Console.WriteLine(CurrentDataStore);	
 			localConfig.Save (ConfigurationSaveMode.Modified);
 		}
 	}

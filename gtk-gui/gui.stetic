@@ -263,4 +263,226 @@
       </widget>
     </child>
   </widget>
+  <widget class="Gtk.Window" id="FDQueueView" design-size="645 320">
+    <action-group name="Default">
+      <action id="QueueAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">_Queue</property>
+        <property name="ShortLabel" translatable="yes">Queue</property>
+      </action>
+      <action id="AddItemAction">
+        <property name="Type">Action</property>
+        <property name="Accelerator">&lt;Primary&gt;o</property>
+        <property name="Label" translatable="yes">_Add item…</property>
+        <property name="ShortLabel" translatable="yes">Add item…</property>
+        <signal name="Activated" handler="OnAddItemActionActivated" />
+      </action>
+      <action id="RemoveSelectedAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Remove Selected</property>
+        <property name="Sensitive">False</property>
+        <property name="ShortLabel" translatable="yes">Remove Selected</property>
+        <signal name="Activated" handler="OnRemoveSelectedActionActivated" />
+      </action>
+      <action id="MoveSelectedAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Move Selected</property>
+        <property name="ShortLabel" translatable="yes">Move Selected</property>
+      </action>
+      <action id="EditAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Edit</property>
+        <property name="ShortLabel" translatable="yes">Edit</property>
+      </action>
+      <action id="WindowAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Window</property>
+        <property name="ShortLabel" translatable="yes">Window</property>
+      </action>
+      <action id="HelpAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">_Help</property>
+        <property name="ShortLabel" translatable="yes">Help</property>
+      </action>
+      <action id="QuitAction">
+        <property name="Type">Action</property>
+        <property name="Accelerator">&lt;Primary&gt;q</property>
+        <property name="Label" translatable="yes">_Quit…</property>
+        <property name="ShortLabel" translatable="yes">Quit…</property>
+        <signal name="Activated" handler="OnQuitActionActivated" />
+      </action>
+      <action id="AboutAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">_About…</property>
+        <property name="ShortLabel" translatable="yes">About</property>
+      </action>
+      <action id="SelectAllAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Select All</property>
+        <property name="ShortLabel" translatable="yes">Select All</property>
+      </action>
+    </action-group>
+    <property name="MemberName" />
+    <property name="Title" translatable="yes">Queue - snowpack</property>
+    <property name="WindowPosition">CenterOnParent</property>
+    <child>
+      <widget class="Gtk.VBox" id="vbox1">
+        <property name="MemberName" />
+        <property name="Spacing">6</property>
+        <child>
+          <widget class="Gtk.MenuBar" id="menubar1">
+            <property name="MemberName" />
+            <node name="__gtksharp_109_Stetic_Editor_ActionMenuBar" type="Menubar">
+              <node type="Menu" action="QueueAction">
+                <node type="Menuitem" action="AddItemAction" />
+                <node type="Separator" />
+                <node type="Menuitem" action="MoveSelectedAction" />
+                <node type="Menuitem" action="RemoveSelectedAction" />
+                <node type="Separator" />
+                <node type="Menuitem" action="QuitAction" />
+              </node>
+              <node type="Menu" action="EditAction">
+                <node type="Menuitem" action="SelectAllAction" />
+              </node>
+              <node type="Menu" action="WindowAction" />
+              <node type="Menu" action="HelpAction">
+                <node type="Menuitem" action="AboutAction" />
+              </node>
+            </node>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
+            <property name="MemberName" />
+            <property name="ShadowType">In</property>
+            <child>
+              <widget class="Gtk.TreeView" id="treeview1">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="ShowScrollbars">True</property>
+              </widget>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">True</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.HBox" id="hbox1">
+            <property name="MemberName" />
+            <property name="Spacing">6</property>
+            <child>
+              <widget class="Gtk.Button" id="buttonAdd">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Type">TextOnly</property>
+                <property name="Label" translatable="yes">_Add…</property>
+                <property name="UseUnderline">True</property>
+                <signal name="Clicked" handler="OnButtonAddClicked" />
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Button" id="buttonRemove">
+                <property name="MemberName" />
+                <property name="Sensitive">False</property>
+                <property name="CanFocus">True</property>
+                <property name="Type">TextOnly</property>
+                <property name="Label" translatable="yes">_Remove</property>
+                <property name="UseUnderline">True</property>
+                <signal name="Clicked" handler="OnButtonRemoveClicked" />
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Fixed" id="fixed2">
+                <property name="MemberName" />
+                <property name="HasWindow">False</property>
+              </widget>
+              <packing>
+                <property name="Position">2</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Button" id="buttonArchive">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Type">TextOnly</property>
+                <property name="Label" translatable="yes">_Archives…</property>
+                <property name="UseUnderline">True</property>
+                <signal name="Clicked" handler="OnButtonArchiveClicked" />
+              </widget>
+              <packing>
+                <property name="Position">3</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Fixed" id="fixed1">
+                <property name="MemberName" />
+                <property name="WidthRequest">10</property>
+                <property name="HasWindow">False</property>
+              </widget>
+              <packing>
+                <property name="Position">4</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Statusbar" id="statusbar1">
+            <property name="MemberName" />
+            <property name="Spacing">6</property>
+            <property name="BorderWidth">2</property>
+            <child>
+              <widget class="Gtk.ProgressBar" id="progressbar1">
+                <property name="MemberName" />
+                <property name="WidthRequest">100</property>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="PackType">End</property>
+            <property name="Position">3</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
 </stetic-interface>

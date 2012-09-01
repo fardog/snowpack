@@ -64,6 +64,10 @@
     <Compile Include="FDChecksum.cs" />
     <Compile Include="ArchiveBrowser.cs" />
     <Compile Include="gtk-gui\snowpack.ArchiveBrowser.cs" />
+    <Compile Include="FDOperationQueue.cs" />
+    <Compile Include="FDQueueItem.cs" />
+    <Compile Include="FDQueueView.cs" />
+    <Compile Include="gtk-gui\FDQueueView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
