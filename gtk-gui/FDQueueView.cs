@@ -5,7 +5,7 @@ public partial class FDQueueView
 {
 	private global::Gtk.UIManager UIManager;
 	private global::Gtk.Action QueueAction;
-	private global::Gtk.Action AddItemAction;
+	private global::Gtk.Action AddFileAction;
 	private global::Gtk.Action RemoveSelectedAction;
 	private global::Gtk.Action MoveSelectedAction;
 	private global::Gtk.Action EditAction;
@@ -14,12 +14,15 @@ public partial class FDQueueView
 	private global::Gtk.Action QuitAction;
 	private global::Gtk.Action AboutAction;
 	private global::Gtk.Action SelectAllAction;
+	private global::Gtk.Action PreferencesAction;
+	private global::Gtk.Action AddDirectoryAction;
 	private global::Gtk.VBox vbox1;
 	private global::Gtk.MenuBar menubar1;
 	private global::Gtk.ScrolledWindow GtkScrolledWindow;
 	private global::Gtk.TreeView treeview1;
 	private global::Gtk.HBox hbox1;
-	private global::Gtk.Button buttonAdd;
+	private global::Gtk.Button buttonAddFile;
+	private global::Gtk.Button buttonAddDir;
 	private global::Gtk.Button buttonRemove;
 	private global::Gtk.Fixed fixed2;
 	private global::Gtk.Button buttonArchive;
@@ -35,9 +38,9 @@ public partial class FDQueueView
 		this.QueueAction = new global::Gtk.Action ("QueueAction", global::Mono.Unix.Catalog.GetString ("_Queue"), null, null);
 		this.QueueAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Queue");
 		w1.Add (this.QueueAction, null);
-		this.AddItemAction = new global::Gtk.Action ("AddItemAction", global::Mono.Unix.Catalog.GetString ("_Add item…"), null, null);
-		this.AddItemAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Add item…");
-		w1.Add (this.AddItemAction, "<Primary>o");
+		this.AddFileAction = new global::Gtk.Action ("AddFileAction", global::Mono.Unix.Catalog.GetString ("_Add item…"), null, null);
+		this.AddFileAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Add item…");
+		w1.Add (this.AddFileAction, "<Primary>o");
 		this.RemoveSelectedAction = new global::Gtk.Action ("RemoveSelectedAction", global::Mono.Unix.Catalog.GetString ("Remove Selected"), null, null);
 		this.RemoveSelectedAction.Sensitive = false;
 		this.RemoveSelectedAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Remove Selected");
@@ -62,7 +65,13 @@ public partial class FDQueueView
 		w1.Add (this.AboutAction, null);
 		this.SelectAllAction = new global::Gtk.Action ("SelectAllAction", global::Mono.Unix.Catalog.GetString ("Select All"), null, null);
 		this.SelectAllAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Select All");
-		w1.Add (this.SelectAllAction, null);
+		w1.Add (this.SelectAllAction, "<Primary>a");
+		this.PreferencesAction = new global::Gtk.Action ("PreferencesAction", global::Mono.Unix.Catalog.GetString ("Pr_eferences…"), null, null);
+		this.PreferencesAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Pr_eferences…");
+		w1.Add (this.PreferencesAction, null);
+		this.AddDirectoryAction = new global::Gtk.Action ("AddDirectoryAction", global::Mono.Unix.Catalog.GetString ("Add directory…"), null, null);
+		this.AddDirectoryAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Add directory…");
+		w1.Add (this.AddDirectoryAction, null);
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "FDQueueView";
@@ -70,9 +79,10 @@ public partial class FDQueueView
 		this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 		// Container child FDQueueView.Gtk.Container+ContainerChild
 		this.vbox1 = new global::Gtk.VBox ();
+		this.vbox1.Name = "vbox1";
 		this.vbox1.Spacing = 6;
 		// Container child vbox1.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='QueueAction' action='QueueAction'><menuitem name='AddItemAction' action='AddItemAction'/><separator/><menuitem name='MoveSelectedAction' action='MoveSelectedAction'/><menuitem name='RemoveSelectedAction' action='RemoveSelectedAction'/><separator/><menuitem name='QuitAction' action='QuitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='SelectAllAction' action='SelectAllAction'/></menu><menu name='WindowAction' action='WindowAction'/><menu name='HelpAction' action='HelpAction'><menuitem name='AboutAction' action='AboutAction'/></menu></menubar></ui>");
+		this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='QueueAction' action='QueueAction'><menuitem name='AddFileAction' action='AddFileAction'/><menuitem name='AddDirectoryAction' action='AddDirectoryAction'/><separator/><menuitem name='MoveSelectedAction' action='MoveSelectedAction'/><menuitem name='RemoveSelectedAction' action='RemoveSelectedAction'/><separator/><menuitem name='QuitAction' action='QuitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='SelectAllAction' action='SelectAllAction'/><separator/><menuitem name='PreferencesAction' action='PreferencesAction'/></menu><menu name='WindowAction' action='WindowAction'/><menu name='HelpAction' action='HelpAction'><menuitem name='AboutAction' action='AboutAction'/></menu></menubar></ui>");
 		this.menubar1 = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/menubar1")));
 		this.menubar1.Name = "menubar1";
 		this.vbox1.Add (this.menubar1);
@@ -98,16 +108,27 @@ public partial class FDQueueView
 		this.hbox1.Spacing = 6;
 		this.hbox1.BorderWidth = ((uint)(2));
 		// Container child hbox1.Gtk.Box+BoxChild
-		this.buttonAdd = new global::Gtk.Button ();
-		this.buttonAdd.CanFocus = true;
-		this.buttonAdd.Name = "buttonAdd";
-		this.buttonAdd.UseUnderline = true;
-		this.buttonAdd.Label = global::Mono.Unix.Catalog.GetString ("_Add…");
-		this.hbox1.Add (this.buttonAdd);
-		global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonAdd]));
+		this.buttonAddFile = new global::Gtk.Button ();
+		this.buttonAddFile.CanFocus = true;
+		this.buttonAddFile.Name = "buttonAddFile";
+		this.buttonAddFile.UseUnderline = true;
+		this.buttonAddFile.Label = global::Mono.Unix.Catalog.GetString ("Add _File…");
+		this.hbox1.Add (this.buttonAddFile);
+		global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonAddFile]));
 		w5.Position = 0;
 		w5.Expand = false;
 		w5.Fill = false;
+		// Container child hbox1.Gtk.Box+BoxChild
+		this.buttonAddDir = new global::Gtk.Button ();
+		this.buttonAddDir.CanFocus = true;
+		this.buttonAddDir.Name = "buttonAddDir";
+		this.buttonAddDir.UseUnderline = true;
+		this.buttonAddDir.Label = global::Mono.Unix.Catalog.GetString ("Add _Directory…");
+		this.hbox1.Add (this.buttonAddDir);
+		global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonAddDir]));
+		w6.Position = 1;
+		w6.Expand = false;
+		w6.Fill = false;
 		// Container child hbox1.Gtk.Box+BoxChild
 		this.buttonRemove = new global::Gtk.Button ();
 		this.buttonRemove.Sensitive = false;
@@ -116,17 +137,17 @@ public partial class FDQueueView
 		this.buttonRemove.UseUnderline = true;
 		this.buttonRemove.Label = global::Mono.Unix.Catalog.GetString ("_Remove");
 		this.hbox1.Add (this.buttonRemove);
-		global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonRemove]));
-		w6.Position = 1;
-		w6.Expand = false;
-		w6.Fill = false;
+		global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonRemove]));
+		w7.Position = 2;
+		w7.Expand = false;
+		w7.Fill = false;
 		// Container child hbox1.Gtk.Box+BoxChild
 		this.fixed2 = new global::Gtk.Fixed ();
 		this.fixed2.Name = "fixed2";
 		this.fixed2.HasWindow = false;
 		this.hbox1.Add (this.fixed2);
-		global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.fixed2]));
-		w7.Position = 2;
+		global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.fixed2]));
+		w8.Position = 3;
 		// Container child hbox1.Gtk.Box+BoxChild
 		this.buttonArchive = new global::Gtk.Button ();
 		this.buttonArchive.CanFocus = true;
@@ -134,15 +155,15 @@ public partial class FDQueueView
 		this.buttonArchive.UseUnderline = true;
 		this.buttonArchive.Label = global::Mono.Unix.Catalog.GetString ("_Archives…");
 		this.hbox1.Add (this.buttonArchive);
-		global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonArchive]));
-		w8.Position = 3;
-		w8.Expand = false;
-		w8.Fill = false;
-		this.vbox1.Add (this.hbox1);
-		global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
-		w9.Position = 2;
+		global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonArchive]));
+		w9.Position = 4;
 		w9.Expand = false;
 		w9.Fill = false;
+		this.vbox1.Add (this.hbox1);
+		global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
+		w10.Position = 2;
+		w10.Expand = false;
+		w10.Fill = false;
 		// Container child vbox1.Gtk.Box+BoxChild
 		this.statusbar1 = new global::Gtk.Statusbar ();
 		this.statusbar1.Name = "statusbar1";
@@ -154,15 +175,15 @@ public partial class FDQueueView
 		this.progressbar1.WidthRequest = 100;
 		this.progressbar1.Name = "progressbar1";
 		this.statusbar1.Add (this.progressbar1);
-		global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.statusbar1 [this.progressbar1]));
-		w10.Position = 1;
-		w10.Expand = false;
-		this.vbox1.Add (this.statusbar1);
-		global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.statusbar1]));
-		w11.PackType = ((global::Gtk.PackType)(1));
-		w11.Position = 3;
+		global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.statusbar1 [this.progressbar1]));
+		w11.Position = 1;
 		w11.Expand = false;
-		w11.Fill = false;
+		this.vbox1.Add (this.statusbar1);
+		global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.statusbar1]));
+		w12.PackType = ((global::Gtk.PackType)(1));
+		w12.Position = 3;
+		w12.Expand = false;
+		w12.Fill = false;
 		this.Add (this.vbox1);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();
@@ -170,10 +191,12 @@ public partial class FDQueueView
 		this.DefaultWidth = 645;
 		this.DefaultHeight = 320;
 		this.Show ();
-		this.AddItemAction.Activated += new global::System.EventHandler (this.OnAddItemActionActivated);
+		this.AddFileAction.Activated += new global::System.EventHandler (this.OnAddFileActionActivated);
 		this.RemoveSelectedAction.Activated += new global::System.EventHandler (this.OnRemoveSelectedActionActivated);
 		this.QuitAction.Activated += new global::System.EventHandler (this.OnQuitActionActivated);
-		this.buttonAdd.Clicked += new global::System.EventHandler (this.OnButtonAddClicked);
+		this.AddDirectoryAction.Activated += new global::System.EventHandler (this.OnAddDirectoryActionActivated);
+		this.buttonAddFile.Clicked += new global::System.EventHandler (this.OnButtonAddFileClicked);
+		this.buttonAddDir.Clicked += new global::System.EventHandler (this.OnButtonAddDirClicked);
 		this.buttonRemove.Clicked += new global::System.EventHandler (this.OnButtonRemoveClicked);
 		this.buttonArchive.Clicked += new global::System.EventHandler (this.OnButtonArchiveClicked);
 	}

@@ -226,27 +226,34 @@ public partial class FDQueueView : Gtk.Window
 		//TODO start up UI thread again
 	}
 	
-	protected void AddDialog (object sender, System.EventArgs e)
+	protected void AddFileDialog (object sender, System.EventArgs e)
 	{
 		Gtk.FileChooserDialog addFile = new Gtk.FileChooserDialog("Add file to Upload Queue", 
 		                                                          this, 
 		                                                          FileChooserAction.Open,
 		                                                          "Cancel",ResponseType.Cancel,
-		                                                          "Open",ResponseType.Accept);
+		                                                          "Add File",ResponseType.Accept);
 		if (addFile.Run() == (int)ResponseType.Accept)
 		{
-			FileAttributes attr = File.GetAttributes(addFile.Filename);
-			if((attr & FileAttributes.Directory) == FileAttributes.Directory)
-			{
-				MessageDialog md = new MessageDialog(addFile, DialogFlags.Modal, MessageType.Error, ButtonsType.Ok,
-		                                     "Adding Directories isn't supported yet.");
-				ResponseType result = (ResponseType)md.Run ();
-				md.Destroy ();
-			}
-			else this.enqueue (addFile.Filename);
+			this.enqueue (addFile.Filename);
 		}
 		
 		addFile.Destroy();
+	}
+	
+	protected void AddDirDialog (object sender, System.EventArgs e)
+	{
+		Gtk.FileChooserDialog addDir = new Gtk.FileChooserDialog("Add directory to Upload Queue",
+		                                                         this,
+		                                                         FileChooserAction.SelectFolder,
+		                                                         "Cancel",ResponseType.Cancel,
+		                                                         "Add Directory",ResponseType.Accept);
+		if (addDir.Run () == (int)ResponseType.Accept)
+		{
+			this.enqueue (addDir.Filename);
+		}
+		
+		addDir.Destroy ();
 	}
 	
 	protected void ArchiveDialog (object sender, System.EventArgs e)
@@ -280,9 +287,9 @@ public partial class FDQueueView : Gtk.Window
 	 * go below here
 	 * */
 	
-	protected void OnButtonAddClicked (object sender, System.EventArgs e)
+	protected void OnButtonAddFileClicked (object sender, System.EventArgs e)
 	{
-		AddDialog(sender, e);
+		AddFileDialog(sender, e);
 	}
 
 	protected void OnButtonRemoveClicked (object sender, System.EventArgs e)
@@ -295,9 +302,9 @@ public partial class FDQueueView : Gtk.Window
 		ArchiveDialog(sender, e);
 	}
 
-	protected void OnAddItemActionActivated (object sender, System.EventArgs e)
+	protected void OnAddFileActionActivated (object sender, System.EventArgs e)
 	{
-		AddDialog(sender, e);
+		AddFileDialog(sender, e);
 	}
 
 	protected void OnRemoveSelectedActionActivated (object sender, System.EventArgs e)
@@ -315,6 +322,16 @@ public partial class FDQueueView : Gtk.Window
 			OnDeleteEvent(sender, (DeleteEventArgs)e);
 		else
 			md.Destroy ();
+	}
+
+	protected void OnAddDirectoryActionActivated (object sender, System.EventArgs e)
+	{
+		AddDirDialog(sender, e);
+	}
+
+	protected void OnButtonAddDirClicked (object sender, System.EventArgs e)
+	{
+		AddDirDialog(sender, e);
 	}
 }
 

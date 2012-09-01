@@ -270,12 +270,12 @@
         <property name="Label" translatable="yes">_Queue</property>
         <property name="ShortLabel" translatable="yes">Queue</property>
       </action>
-      <action id="AddItemAction">
+      <action id="AddFileAction">
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Primary&gt;o</property>
         <property name="Label" translatable="yes">_Add item…</property>
         <property name="ShortLabel" translatable="yes">Add item…</property>
-        <signal name="Activated" handler="OnAddItemActionActivated" />
+        <signal name="Activated" handler="OnAddFileActionActivated" />
       </action>
       <action id="RemoveSelectedAction">
         <property name="Type">Action</property>
@@ -327,6 +327,12 @@
         <property name="Label" translatable="yes">Pr_eferences…</property>
         <property name="ShortLabel" translatable="yes">Pr_eferences…</property>
       </action>
+      <action id="AddDirectoryAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Add directory…</property>
+        <property name="ShortLabel" translatable="yes">Add directory…</property>
+        <signal name="Activated" handler="OnAddDirectoryActionActivated" />
+      </action>
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">Queue - snowpack</property>
@@ -340,7 +346,8 @@
             <property name="MemberName" />
             <node name="__gtksharp_109_Stetic_Editor_ActionMenuBar" type="Menubar">
               <node type="Menu" action="QueueAction">
-                <node type="Menuitem" action="AddItemAction" />
+                <node type="Menuitem" action="AddFileAction" />
+                <node type="Menuitem" action="AddDirectoryAction" />
                 <node type="Separator" />
                 <node type="Menuitem" action="MoveSelectedAction" />
                 <node type="Menuitem" action="RemoveSelectedAction" />
@@ -388,16 +395,32 @@
             <property name="Spacing">6</property>
             <property name="BorderWidth">2</property>
             <child>
-              <widget class="Gtk.Button" id="buttonAdd">
+              <widget class="Gtk.Button" id="buttonAddFile">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
-                <property name="Label" translatable="yes">_Add…</property>
+                <property name="Label" translatable="yes">Add _File…</property>
                 <property name="UseUnderline">True</property>
-                <signal name="Clicked" handler="OnButtonAddClicked" />
+                <signal name="Clicked" handler="OnButtonAddFileClicked" />
               </widget>
               <packing>
                 <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Button" id="buttonAddDir">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Type">TextOnly</property>
+                <property name="Label" translatable="yes">Add _Directory…</property>
+                <property name="UseUnderline">True</property>
+                <signal name="Clicked" handler="OnButtonAddDirClicked" />
+              </widget>
+              <packing>
+                <property name="Position">1</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -414,7 +437,7 @@
                 <signal name="Clicked" handler="OnButtonRemoveClicked" />
               </widget>
               <packing>
-                <property name="Position">1</property>
+                <property name="Position">2</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -426,7 +449,7 @@
                 <property name="HasWindow">False</property>
               </widget>
               <packing>
-                <property name="Position">2</property>
+                <property name="Position">3</property>
                 <property name="AutoSize">True</property>
               </packing>
             </child>
@@ -440,7 +463,7 @@
                 <signal name="Clicked" handler="OnButtonArchiveClicked" />
               </widget>
               <packing>
-                <property name="Position">3</property>
+                <property name="Position">4</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>

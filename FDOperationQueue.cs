@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.IO;
 
 namespace snowpack
 {
@@ -114,49 +115,70 @@ namespace snowpack
 				currentFile = currentItem.path;
 				currentInfo = new System.IO.FileInfo(currentItem.path);
 				currentGuid = currentItem.guid;
+				FDQueueItem finishItem = currentItem; //create a copy for the finish queue
 				
-				//Calculate the file's checksum
-				currentStatus = "checksum";
-				FDChecksum fileChecksum = new FDChecksum(currentItem.path);
-				fileChecksum.CalculateChecksum();
-				currentItem.checksum = fileChecksum.checksum;
+				//pass to our (potentially) recursive function for upload
+				this.ProcessFile(currentFile);
 				
-				//Verfiy we haven't uploaded before
-				string archiveId = DataStore.CheckExists(currentItem.checksum, currentInfo.Length);
-				if (!String.IsNullOrEmpty(archiveId))
-				{
-					DataStore.InsertFile(currentItem.path,
-					                     currentItem.checksum,
-					                     currentInfo.Length,
-					                     currentInfo.LastWriteTimeUtc,
-					                     archiveId);
-					finished.Enqueue(currentItem);
-					continue;
-				}
-				
-				//Upload the file
-				currentStatus = "upload";
-				FDGlacier glacier = new FDGlacier();
-				glacier.archiveDescription = System.IO.Path.GetFileName (currentItem.path);
-				glacier.setCallback(currentItem._updateProgress);
-				glacier.uploadFile(currentItem.path);
-				currentResult = glacier.getResult();
-				
-				//Store the result
-				currentStatus = "store";
-				DataStore.InsertFile(currentItem.path, 
-				                     currentItem.checksum, 
-				                     currentInfo.Length, 
-				                     currentInfo.LastWriteTimeUtc, 
-				                     currentResult.ArchiveId);
-				
-				//Add the item to the "finished" queue
-				finished.Enqueue(currentItem);
+				//Add the parent item to the "finished" queue
+				finished.Enqueue(finishItem);
 				
 				currentStatus = "idle";
 				
 				numCompleted++;
 			}
+		}
+		
+		public void ProcessFile(string fileName)
+		{
+			FileAttributes attr = File.GetAttributes(fileName);
+			if ((attr & FileAttributes.Directory) == FileAttributes.Directory) { //we're on a directory, process it recursively
+				foreach ( string f in Directory.GetFiles(fileName) ) //handle files first
+					this.ProcessFile (f);
+				foreach ( string d in Directory.GetDirectories(fileName) ) //then directories
+					this.ProcessFile (d);
+				return; //if we're done processing all contents, return
+			}
+			
+			//Build our temporary item, and update all "current*" EXCEPT guid, since we use to communicate with frontend
+			FDQueueItem item = new FDQueueItem(fileName, FileAttributes.Normal);
+			currentItem = item;
+			currentFile = item.path;
+			currentInfo = new System.IO.FileInfo(item.path);
+			
+			//Calculate the file's checksum
+			currentStatus = "checksum";
+			FDChecksum fileChecksum = new FDChecksum(currentItem.path);
+			fileChecksum.CalculateChecksum();
+			currentItem.checksum = fileChecksum.checksum;
+			
+			//Verfiy we haven't uploaded before
+			string archiveId = DataStore.CheckExists(currentItem.checksum, currentInfo.Length);
+			if (!String.IsNullOrEmpty(archiveId)) //if we got a response, re-insert the file to db and advance queue
+			{
+				DataStore.InsertFile(currentItem.path,
+				                     currentItem.checksum,
+				                     currentInfo.Length,
+				                     currentInfo.LastWriteTimeUtc,
+				                     archiveId);
+				return;
+			}
+			
+			//Upload the file
+			currentStatus = "upload";
+			FDGlacier glacier = new FDGlacier();
+			glacier.archiveDescription = System.IO.Path.GetFileName (currentItem.path);
+			glacier.setCallback(currentItem._updateProgress);
+			glacier.uploadFile(currentItem.path);
+			currentResult = glacier.getResult();
+			
+			//Store the result
+			currentStatus = "store";
+			DataStore.InsertFile(currentItem.path, 
+			                     currentItem.checksum, 
+			                     currentInfo.Length, 
+			                     currentInfo.LastWriteTimeUtc, 
+			                     currentResult.ArchiveId);
 		}
 		
 		public void StopQueue()

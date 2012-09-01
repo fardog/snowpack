@@ -32,8 +32,8 @@ Now that I feel like this is a successful test, the current areas of work are:
 
 The future will be:
 
- - Moving things to a client/server architecture with a background daemon that
-   performs uploads and reads a queue and a client that manages that queue and
+ - Moving things to a client/server architecture with a background daemon that  
+   performs uploads and reads a queue and a client that manages that queue and  
    checks progress.
  - Performing automated restores of some kind
  
