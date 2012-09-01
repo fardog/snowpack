@@ -177,30 +177,30 @@ public partial class FDQueueView : Gtk.Window
 		while (true) {
 			switch(operationQueue.currentStatus)
 			{
-			case "checksum":
-				statusbar1.Push (statusbar1.GetContextId("checksum"), "Checksumming \"" +
-				                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
-				processing = true;
-				break;
-			case "upload":
-				statusbar1.Push (statusbar1.GetContextId("upload"), "Uploading \"" +
-				                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
-				progressbar1.Fraction = (float)operationQueue.currentItem.progress / 100;
-				processing = true;
-				break;
-			case "store":
-				statusbar1.Push (statusbar1.GetContextId("store"), "Indexing \"" + 
-				                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
-				processing = true;
-				break;
-			default:
-				statusbar1.Push (statusbar1.GetContextId("idle"), "");
-				progressbar1.Fraction = 0;
-				processing = false;
-				break;
+				case "checksum":
+					statusbar1.Push (statusbar1.GetContextId("checksum"), "Checksumming \"" +
+					                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
+					processing = true;
+					break;
+				case "upload":
+					statusbar1.Push (statusbar1.GetContextId("upload"), "Uploading \"" +
+					                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
+					progressbar1.Fraction = (float)operationQueue.currentItem.progress / 100;
+					processing = true;
+					break;
+				case "store":
+					statusbar1.Push (statusbar1.GetContextId("store"), "Indexing \"" + 
+					                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
+					processing = true;
+					break;
+				default:
+					statusbar1.Push (statusbar1.GetContextId("idle"), "");
+					progressbar1.Fraction = 0;
+					processing = false;
+					break;
 			}
 			
-			if(operationQueue.finished.Count > 0) {
+			if(operationQueue.finished.Count > 0) { //if we have finished queue items to deal with
 				FDQueueItem finishItem = operationQueue.finished.Dequeue();
 				updateTree (finishItem.guid, "Finished");
 			}
@@ -223,6 +223,7 @@ public partial class FDQueueView : Gtk.Window
 	private void _updateUIDone(object sender, RunWorkerCompletedEventArgs e)
 	{
 		throw new Exception("UI update thread exited! That isn't supposed to happen!");
+		//TODO start up UI thread again
 	}
 	
 	protected void AddDialog (object sender, System.EventArgs e)

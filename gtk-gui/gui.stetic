@@ -318,8 +318,14 @@
       </action>
       <action id="SelectAllAction">
         <property name="Type">Action</property>
+        <property name="Accelerator">&lt;Primary&gt;a</property>
         <property name="Label" translatable="yes">Select All</property>
         <property name="ShortLabel" translatable="yes">Select All</property>
+      </action>
+      <action id="PreferencesAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Pr_eferences…</property>
+        <property name="ShortLabel" translatable="yes">Pr_eferences…</property>
       </action>
     </action-group>
     <property name="MemberName" />
@@ -343,6 +349,8 @@
               </node>
               <node type="Menu" action="EditAction">
                 <node type="Menuitem" action="SelectAllAction" />
+                <node type="Separator" />
+                <node type="Menuitem" action="PreferencesAction" />
               </node>
               <node type="Menu" action="WindowAction" />
               <node type="Menu" action="HelpAction">
@@ -378,6 +386,7 @@
           <widget class="Gtk.HBox" id="hbox1">
             <property name="MemberName" />
             <property name="Spacing">6</property>
+            <property name="BorderWidth">2</property>
             <child>
               <widget class="Gtk.Button" id="buttonAdd">
                 <property name="MemberName" />
@@ -437,18 +446,6 @@
                 <property name="Fill">False</property>
               </packing>
             </child>
-            <child>
-              <widget class="Gtk.Fixed" id="fixed1">
-                <property name="MemberName" />
-                <property name="WidthRequest">10</property>
-                <property name="HasWindow">False</property>
-              </widget>
-              <packing>
-                <property name="Position">4</property>
-                <property name="AutoSize">False</property>
-                <property name="Expand">False</property>
-              </packing>
-            </child>
           </widget>
           <packing>
             <property name="Position">2</property>
@@ -462,6 +459,7 @@
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <property name="BorderWidth">2</property>
+            <property name="HasResizeGrip">False</property>
             <child>
               <widget class="Gtk.ProgressBar" id="progressbar1">
                 <property name="MemberName" />

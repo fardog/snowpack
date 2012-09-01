@@ -23,7 +23,6 @@ public partial class FDQueueView
 	private global::Gtk.Button buttonRemove;
 	private global::Gtk.Fixed fixed2;
 	private global::Gtk.Button buttonArchive;
-	private global::Gtk.Fixed fixed1;
 	private global::Gtk.Statusbar statusbar1;
 	private global::Gtk.ProgressBar progressbar1;
 	
@@ -71,7 +70,6 @@ public partial class FDQueueView
 		this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 		// Container child FDQueueView.Gtk.Container+ContainerChild
 		this.vbox1 = new global::Gtk.VBox ();
-		this.vbox1.Name = "vbox1";
 		this.vbox1.Spacing = 6;
 		// Container child vbox1.Gtk.Box+BoxChild
 		this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='QueueAction' action='QueueAction'><menuitem name='AddItemAction' action='AddItemAction'/><separator/><menuitem name='MoveSelectedAction' action='MoveSelectedAction'/><menuitem name='RemoveSelectedAction' action='RemoveSelectedAction'/><separator/><menuitem name='QuitAction' action='QuitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='SelectAllAction' action='SelectAllAction'/></menu><menu name='WindowAction' action='WindowAction'/><menu name='HelpAction' action='HelpAction'><menuitem name='AboutAction' action='AboutAction'/></menu></menubar></ui>");
@@ -98,6 +96,7 @@ public partial class FDQueueView
 		this.hbox1 = new global::Gtk.HBox ();
 		this.hbox1.Name = "hbox1";
 		this.hbox1.Spacing = 6;
+		this.hbox1.BorderWidth = ((uint)(2));
 		// Container child hbox1.Gtk.Box+BoxChild
 		this.buttonAdd = new global::Gtk.Button ();
 		this.buttonAdd.CanFocus = true;
@@ -139,39 +138,31 @@ public partial class FDQueueView
 		w8.Position = 3;
 		w8.Expand = false;
 		w8.Fill = false;
-		// Container child hbox1.Gtk.Box+BoxChild
-		this.fixed1 = new global::Gtk.Fixed ();
-		this.fixed1.WidthRequest = 10;
-		this.fixed1.Name = "fixed1";
-		this.fixed1.HasWindow = false;
-		this.hbox1.Add (this.fixed1);
-		global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.fixed1]));
-		w9.Position = 4;
-		w9.Expand = false;
 		this.vbox1.Add (this.hbox1);
-		global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
-		w10.Position = 2;
-		w10.Expand = false;
-		w10.Fill = false;
+		global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
+		w9.Position = 2;
+		w9.Expand = false;
+		w9.Fill = false;
 		// Container child vbox1.Gtk.Box+BoxChild
 		this.statusbar1 = new global::Gtk.Statusbar ();
 		this.statusbar1.Name = "statusbar1";
 		this.statusbar1.Spacing = 6;
 		this.statusbar1.BorderWidth = ((uint)(2));
+		this.statusbar1.HasResizeGrip = false;
 		// Container child statusbar1.Gtk.Box+BoxChild
 		this.progressbar1 = new global::Gtk.ProgressBar ();
 		this.progressbar1.WidthRequest = 100;
 		this.progressbar1.Name = "progressbar1";
 		this.statusbar1.Add (this.progressbar1);
-		global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.statusbar1 [this.progressbar1]));
-		w11.Position = 1;
-		w11.Expand = false;
+		global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.statusbar1 [this.progressbar1]));
+		w10.Position = 1;
+		w10.Expand = false;
 		this.vbox1.Add (this.statusbar1);
-		global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.statusbar1]));
-		w12.PackType = ((global::Gtk.PackType)(1));
-		w12.Position = 3;
-		w12.Expand = false;
-		w12.Fill = false;
+		global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.statusbar1]));
+		w11.PackType = ((global::Gtk.PackType)(1));
+		w11.Position = 3;
+		w11.Expand = false;
+		w11.Fill = false;
 		this.Add (this.vbox1);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();
