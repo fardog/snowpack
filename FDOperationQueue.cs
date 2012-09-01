@@ -32,7 +32,7 @@ namespace snowpack
 		public Amazon.Glacier.Transfer.UploadResult currentResult { get; set; }
 		private FDDataStore DataStore;
 		public Queue<FDQueueItem> finished;
-			
+		
 		public FDOperationQueue (FDDataStore store)
 		{
 			queue = new List<FDQueueItem>();

@@ -31,7 +31,6 @@ public partial class FDQueueView : Gtk.Window
 	private FDDataStore DataStore;
 	private Gtk.ListStore uploadQueue; //the datastore for the treeview
 	private BackgroundWorker updateUIWorker;
-	private ArchiveBrowser archiveBrowser;
 	
 	
 	//local definition of the operation queue item
@@ -258,8 +257,7 @@ public partial class FDQueueView : Gtk.Window
 	
 	protected void ArchiveDialog (object sender, System.EventArgs e)
 	{
-		archiveBrowser = new ArchiveBrowser(UserSettings.CurrentDataStore);
-		archiveBrowser.Show ();
+		return;
 	}
 	
 	protected void RemoveItem (object sender, System.EventArgs e)

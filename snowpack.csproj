@@ -53,8 +53,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="MainWindow.cs" />
-    <Compile Include="gtk-gui\MainWindow.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="FDGlacier.cs" />
@@ -62,8 +60,6 @@
     <Compile Include="FDDataStore.cs" />
     <Compile Include="FDUserSettings.cs" />
     <Compile Include="FDChecksum.cs" />
-    <Compile Include="ArchiveBrowser.cs" />
-    <Compile Include="gtk-gui\snowpack.ArchiveBrowser.cs" />
     <Compile Include="FDOperationQueue.cs" />
     <Compile Include="FDQueueItem.cs" />
     <Compile Include="FDQueueView.cs" />

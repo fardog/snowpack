@@ -8,261 +8,6 @@
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <widget-library name="../bin/Debug/snowpack.exe" internal="true" />
   </import>
-  <widget class="Gtk.Window" id="MainWindow" design-size="737 533">
-    <action-group name="Default">
-      <action id="FileAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes">_File</property>
-        <property name="ShortLabel" translatable="yes">_File</property>
-      </action>
-      <action id="OpenAction">
-        <property name="Type">Action</property>
-        <property name="Accelerator">&lt;Control&gt;o</property>
-        <property name="Label" translatable="yes">_Open</property>
-        <property name="ShortLabel" translatable="yes">_Open</property>
-      </action>
-    </action-group>
-    <property name="MemberName" />
-    <property name="Title" translatable="yes">snowpack</property>
-    <property name="WindowPosition">CenterOnParent</property>
-    <signal name="DeleteEvent" handler="OnDeleteEvent" />
-    <child>
-      <widget class="Gtk.VBox" id="vbox1">
-        <property name="MemberName" />
-        <property name="Spacing">6</property>
-        <child>
-          <widget class="Gtk.FileChooserWidget" id="fileChooser">
-            <property name="MemberName" />
-            <signal name="SelectionChanged" handler="onSelectionChanged" />
-            <signal name="FileActivated" handler="onFileActivated" />
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Table" id="table3">
-            <property name="MemberName" />
-            <property name="NColumns">4</property>
-            <property name="RowSpacing">6</property>
-            <property name="ColumnSpacing">6</property>
-            <child>
-              <widget class="Gtk.Alignment" id="alignment4">
-                <property name="MemberName" />
-                <child>
-                  <placeholder />
-                </child>
-              </widget>
-              <packing>
-                <property name="LeftAttach">1</property>
-                <property name="RightAttach">2</property>
-                <property name="AutoSize">True</property>
-                <property name="YOptions">Fill</property>
-                <property name="XExpand">True</property>
-                <property name="XFill">True</property>
-                <property name="XShrink">False</property>
-                <property name="YExpand">False</property>
-                <property name="YFill">True</property>
-                <property name="YShrink">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Alignment" id="alignment5">
-                <property name="MemberName" />
-                <child>
-                  <widget class="Gtk.Button" id="buttonArchive">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Type">TextOnly</property>
-                    <property name="Label" translatable="yes">Archive Browser</property>
-                    <property name="UseUnderline">True</property>
-                    <signal name="Activated" handler="onArchiveActivated" />
-                    <signal name="Clicked" handler="onArchiveClicked" />
-                  </widget>
-                </child>
-              </widget>
-              <packing>
-                <property name="AutoSize">True</property>
-                <property name="XOptions">Fill</property>
-                <property name="YOptions">Fill</property>
-                <property name="XExpand">False</property>
-                <property name="XFill">True</property>
-                <property name="XShrink">False</property>
-                <property name="YExpand">False</property>
-                <property name="YFill">True</property>
-                <property name="YShrink">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Button" id="buttonCancel">
-                <property name="MemberName" />
-                <property name="Sensitive">False</property>
-                <property name="CanFocus">True</property>
-                <property name="Type">TextOnly</property>
-                <property name="Label" translatable="yes">Cancel</property>
-                <property name="UseUnderline">True</property>
-                <signal name="Clicked" handler="onCancelClicked" />
-              </widget>
-              <packing>
-                <property name="LeftAttach">2</property>
-                <property name="RightAttach">3</property>
-                <property name="AutoSize">True</property>
-                <property name="XOptions">Fill</property>
-                <property name="YOptions">Fill</property>
-                <property name="XExpand">False</property>
-                <property name="XFill">True</property>
-                <property name="XShrink">False</property>
-                <property name="YExpand">False</property>
-                <property name="YFill">True</property>
-                <property name="YShrink">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Button" id="buttonUpload">
-                <property name="MemberName" />
-                <property name="Sensitive">False</property>
-                <property name="CanFocus">True</property>
-                <property name="Type">TextOnly</property>
-                <property name="Label" translatable="yes">Upload</property>
-                <property name="UseUnderline">True</property>
-                <signal name="Clicked" handler="onUploadClicked" />
-              </widget>
-              <packing>
-                <property name="LeftAttach">3</property>
-                <property name="RightAttach">4</property>
-                <property name="AutoSize">True</property>
-                <property name="XOptions">Fill</property>
-                <property name="YOptions">Fill</property>
-                <property name="XExpand">False</property>
-                <property name="XFill">True</property>
-                <property name="XShrink">False</property>
-                <property name="YExpand">False</property>
-                <property name="YFill">True</property>
-                <property name="YShrink">False</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Statusbar" id="statusBar">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <property name="BorderWidth">2</property>
-            <child>
-              <widget class="Gtk.ProgressBar" id="progressBar">
-                <property name="MemberName" />
-                <property name="WidthRequest">100</property>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">False</property>
-                <property name="Expand">False</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="PackType">End</property>
-            <property name="Position">2</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-  </widget>
-  <widget class="Gtk.Window" id="snowpack.ArchiveBrowser" design-size="617 441">
-    <property name="MemberName" />
-    <property name="Title" translatable="yes">ArchiveBrowser</property>
-    <property name="WindowPosition">CenterOnParent</property>
-    <child>
-      <widget class="Gtk.VBox" id="vbox1">
-        <property name="MemberName" />
-        <property name="Spacing">6</property>
-        <child>
-          <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
-            <property name="MemberName" />
-            <property name="ShadowType">In</property>
-            <child>
-              <widget class="Gtk.TreeView" id="archiveTree">
-                <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="ShowScrollbars">True</property>
-              </widget>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.HBox" id="hbox2">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <child>
-              <widget class="Gtk.Label" id="label1">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">This isn't implement yet.</property>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Alignment" id="alignment1">
-                <property name="MemberName" />
-                <child>
-                  <placeholder />
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-              </packing>
-            </child>
-            <child>
-              <placeholder />
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Statusbar" id="statusbar1">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <child>
-              <placeholder />
-            </child>
-            <child>
-              <placeholder />
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">2</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-  </widget>
   <widget class="Gtk.Window" id="FDQueueView" design-size="645 320">
     <action-group name="Default">
       <action id="QueueAction">
@@ -273,7 +18,7 @@
       <action id="AddFileAction">
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Primary&gt;o</property>
-        <property name="Label" translatable="yes">_Add item…</property>
+        <property name="Label" translatable="yes">Add _file…</property>
         <property name="ShortLabel" translatable="yes">Add item…</property>
         <signal name="Activated" handler="OnAddFileActionActivated" />
       </action>
@@ -287,21 +32,25 @@
       <action id="MoveSelectedAction">
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">Move Selected</property>
+        <property name="Sensitive">False</property>
         <property name="ShortLabel" translatable="yes">Move Selected</property>
       </action>
       <action id="EditAction">
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">Edit</property>
+        <property name="Sensitive">False</property>
         <property name="ShortLabel" translatable="yes">Edit</property>
       </action>
       <action id="WindowAction">
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">Window</property>
+        <property name="Sensitive">False</property>
         <property name="ShortLabel" translatable="yes">Window</property>
       </action>
       <action id="HelpAction">
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">_Help</property>
+        <property name="Sensitive">False</property>
         <property name="ShortLabel" translatable="yes">Help</property>
       </action>
       <action id="QuitAction">
@@ -329,7 +78,7 @@
       </action>
       <action id="AddDirectoryAction">
         <property name="Type">Action</property>
-        <property name="Label" translatable="yes">Add directory…</property>
+        <property name="Label" translatable="yes">Add _directory…</property>
         <property name="ShortLabel" translatable="yes">Add directory…</property>
         <signal name="Activated" handler="OnAddDirectoryActionActivated" />
       </action>
@@ -456,6 +205,7 @@
             <child>
               <widget class="Gtk.Button" id="buttonArchive">
                 <property name="MemberName" />
+                <property name="Sensitive">False</property>
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
                 <property name="Label" translatable="yes">_Archives…</property>

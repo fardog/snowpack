@@ -61,6 +61,15 @@ namespace snowpack
 			case "eu-west-1":
 				region = RegionEndpoint.EUWest1;
 				break;
+			case "ap-northeast-1":
+				region = RegionEndpoint.APNortheast1;
+				break;
+			case "ap-southeast-1":
+				region = RegionEndpoint.APSoutheast1;
+				break;
+			case "sa-east-1":
+				region = RegionEndpoint.SAEast1;
+				break;
 			default:
 				region = RegionEndpoint.USEast1;
 				break;

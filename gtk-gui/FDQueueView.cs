@@ -38,7 +38,7 @@ public partial class FDQueueView
 		this.QueueAction = new global::Gtk.Action ("QueueAction", global::Mono.Unix.Catalog.GetString ("_Queue"), null, null);
 		this.QueueAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Queue");
 		w1.Add (this.QueueAction, null);
-		this.AddFileAction = new global::Gtk.Action ("AddFileAction", global::Mono.Unix.Catalog.GetString ("_Add item…"), null, null);
+		this.AddFileAction = new global::Gtk.Action ("AddFileAction", global::Mono.Unix.Catalog.GetString ("Add _file…"), null, null);
 		this.AddFileAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Add item…");
 		w1.Add (this.AddFileAction, "<Primary>o");
 		this.RemoveSelectedAction = new global::Gtk.Action ("RemoveSelectedAction", global::Mono.Unix.Catalog.GetString ("Remove Selected"), null, null);
@@ -46,15 +46,19 @@ public partial class FDQueueView
 		this.RemoveSelectedAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Remove Selected");
 		w1.Add (this.RemoveSelectedAction, null);
 		this.MoveSelectedAction = new global::Gtk.Action ("MoveSelectedAction", global::Mono.Unix.Catalog.GetString ("Move Selected"), null, null);
+		this.MoveSelectedAction.Sensitive = false;
 		this.MoveSelectedAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Move Selected");
 		w1.Add (this.MoveSelectedAction, null);
 		this.EditAction = new global::Gtk.Action ("EditAction", global::Mono.Unix.Catalog.GetString ("Edit"), null, null);
+		this.EditAction.Sensitive = false;
 		this.EditAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Edit");
 		w1.Add (this.EditAction, null);
 		this.WindowAction = new global::Gtk.Action ("WindowAction", global::Mono.Unix.Catalog.GetString ("Window"), null, null);
+		this.WindowAction.Sensitive = false;
 		this.WindowAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Window");
 		w1.Add (this.WindowAction, null);
 		this.HelpAction = new global::Gtk.Action ("HelpAction", global::Mono.Unix.Catalog.GetString ("_Help"), null, null);
+		this.HelpAction.Sensitive = false;
 		this.HelpAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Help");
 		w1.Add (this.HelpAction, null);
 		this.QuitAction = new global::Gtk.Action ("QuitAction", global::Mono.Unix.Catalog.GetString ("_Quit…"), null, null);
@@ -69,7 +73,7 @@ public partial class FDQueueView
 		this.PreferencesAction = new global::Gtk.Action ("PreferencesAction", global::Mono.Unix.Catalog.GetString ("Pr_eferences…"), null, null);
 		this.PreferencesAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Pr_eferences…");
 		w1.Add (this.PreferencesAction, null);
-		this.AddDirectoryAction = new global::Gtk.Action ("AddDirectoryAction", global::Mono.Unix.Catalog.GetString ("Add directory…"), null, null);
+		this.AddDirectoryAction = new global::Gtk.Action ("AddDirectoryAction", global::Mono.Unix.Catalog.GetString ("Add _directory…"), null, null);
 		this.AddDirectoryAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Add directory…");
 		w1.Add (this.AddDirectoryAction, null);
 		this.UIManager.InsertActionGroup (w1, 0);
@@ -150,6 +154,7 @@ public partial class FDQueueView
 		w8.Position = 3;
 		// Container child hbox1.Gtk.Box+BoxChild
 		this.buttonArchive = new global::Gtk.Button ();
+		this.buttonArchive.Sensitive = false;
 		this.buttonArchive.CanFocus = true;
 		this.buttonArchive.Name = "buttonArchive";
 		this.buttonArchive.UseUnderline = true;
