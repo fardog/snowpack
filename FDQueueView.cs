@@ -1,3 +1,18 @@
+/*
+ * Copyright 2012 Far Dog LLC or its affiliates. All Rights Reserved.
+ * 
+ * Licensed under the GNU General Public License, Version 3.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ * 
+ *  http://www.gnu.org/licenses/gpl-3.0.txt
+ * 
+ * or in the "gpl-3.0" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
 using System;
 using System.IO;
 using Gtk;
@@ -14,24 +29,29 @@ public partial class FDQueueView : Gtk.Window
 	private BackgroundWorker queueWorker;
 	private FDUserSettings UserSettings;
 	private FDDataStore DataStore;
-	private Gtk.ListStore uploadQueue;
+	private Gtk.ListStore uploadQueue; //the datastore for the treeview
 	private BackgroundWorker updateUIWorker;
 	private ArchiveBrowser archiveBrowser;
 	
+	
+	//local definition of the operation queue item
 	public struct ListItem
 	{
 		public string file;
 		public int progress;
-		public FDQueueItem item;
+		public Guid guid;
+		public TreeIter iter;
 		
-		public ListItem(string fileName, int prog, FDQueueItem fdq)
+		public ListItem(string fileName, int prog, Guid id, TreeIter it)
 		{
 			this.file = fileName;
 			this.progress = prog;
-			this.item = fdq;
+			this.guid = id;
+			this.iter = it;
 		}
 	}
 	
+	//this list maintains the items in the treeview separately so we can easily find them later
 	private List<ListItem> items;
 		
 	
@@ -45,7 +65,7 @@ public partial class FDQueueView : Gtk.Window
 		
 		//Create the item list
 		items = new List<ListItem>();
-		this.uploadQueue = new ListStore(typeof(string), typeof(string));
+		this.uploadQueue = new ListStore(typeof(string), typeof(string), typeof(Guid));
 		
 		//Create the tree view columns
 		TreeViewColumn filename = new TreeViewColumn();
@@ -104,9 +124,40 @@ public partial class FDQueueView : Gtk.Window
 		FDQueueItem insertedItem = operationQueue.Get(success);
 		
 		//Add to the queue view
-		ListItem item = new ListItem(filePath, insertedItem.progress, insertedItem);
+		TreeIter iter = uploadQueue.AppendValues(filePath, "", insertedItem.guid);
+		ListItem item = new ListItem(filePath, insertedItem.progress, insertedItem.guid, iter);
 		this.items.Add (item);
-		uploadQueue.AppendValues(item.file, "");
+	}
+	
+	protected void dequeueSelected()
+	{
+		TreeSelection selection;
+		selection = treeview1.Selection;
+		TreePath[] paths = selection.GetSelectedRows();
+		TreeModel model = treeview1.Model;
+		
+		foreach (TreePath path in paths) //remove each item from the tree view and operations queue
+		{
+			TreeIter iter;
+			model.GetIter(out iter, path);
+			Guid guid = (Guid)uploadQueue.GetValue (iter, 2);
+			if(operationQueue.Remove (guid)) //only remove from the tree if we can remove from the opqueue
+				uploadQueue.Remove (ref iter);
+			else uploadQueue.SetValue(iter, 1, "Not in Queue"); //we couldn't find it
+		}
+	}
+	
+	//changes the "progress" secion on the tree view for the provided guid
+	private void updateTree(Guid guid, string message)
+	{
+		ListItem toUpdate = items.Find (
+			delegate(ListItem it) {
+				return it.guid == guid;
+			}
+		);
+		
+		if(!String.IsNullOrEmpty(toUpdate.file)) 
+			treeview1.Model.SetValue(toUpdate.iter, 1, message);
 	}
 	
 	private void _queueWork(object sender, DoWorkEventArgs e)
@@ -121,25 +172,48 @@ public partial class FDQueueView : Gtk.Window
 	
 	private void _updateUIWork(object sender, DoWorkEventArgs e)
 	{
+		bool processing = false;
+		
 		while (true) {
 			switch(operationQueue.currentStatus)
 			{
 			case "checksum":
 				statusbar1.Push (statusbar1.GetContextId("checksum"), "Checksumming \"" +
 				                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
+				processing = true;
 				break;
 			case "upload":
 				statusbar1.Push (statusbar1.GetContextId("upload"), "Uploading \"" +
 				                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
 				progressbar1.Fraction = (float)operationQueue.currentItem.progress / 100;
+				processing = true;
 				break;
 			case "store":
 				statusbar1.Push (statusbar1.GetContextId("store"), "Indexing \"" + 
 				                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
+				processing = true;
 				break;
 			default:
 				statusbar1.Push (statusbar1.GetContextId("idle"), "");
+				progressbar1.Fraction = 0;
+				processing = false;
 				break;
+			}
+			
+			if(operationQueue.finished.Count > 0) {
+				FDQueueItem finishItem = operationQueue.finished.Dequeue();
+				updateTree (finishItem.guid, "Finished");
+			}
+			
+			if(processing) {
+				//update the treeview with the currently uploading file
+				try {
+					updateTree(operationQueue.currentGuid, "Uploading");
+				}
+				catch (Exception t) {
+					//do nothing, despite how bad of a practice that is
+					//TODO do better than nothing
+				}
 			}
 			
 			Thread.Sleep (500);
@@ -160,7 +234,15 @@ public partial class FDQueueView : Gtk.Window
 		                                                          "Open",ResponseType.Accept);
 		if (addFile.Run() == (int)ResponseType.Accept)
 		{
-			this.enqueue (addFile.Filename);
+			FileAttributes attr = File.GetAttributes(addFile.Filename);
+			if((attr & FileAttributes.Directory) == FileAttributes.Directory)
+			{
+				MessageDialog md = new MessageDialog(addFile, DialogFlags.Modal, MessageType.Error, ButtonsType.Ok,
+		                                     "Adding Directories isn't supported yet.");
+				ResponseType result = (ResponseType)md.Run ();
+				md.Destroy ();
+			}
+			else this.enqueue (addFile.Filename);
 		}
 		
 		addFile.Destroy();
@@ -174,17 +256,7 @@ public partial class FDQueueView : Gtk.Window
 	
 	protected void RemoveItem (object sender, System.EventArgs e)
 	{
-		TreeSelection selection;
-		selection = treeview1.Selection;
-		TreePath[] paths = selection.GetSelectedRows();
-		TreeModel model = treeview1.Model;
-		
-		foreach (TreePath path in paths)
-		{
-			TreeIter iter;
-			model.GetIter(out iter, path);
-			uploadQueue.Remove (ref iter);
-		}
+		this.dequeueSelected();
 	}
 	
 	protected void RemoveSensitive (object sender, System.EventArgs e)
@@ -234,7 +306,14 @@ public partial class FDQueueView : Gtk.Window
 
 	protected void OnQuitActionActivated (object sender, System.EventArgs e)
 	{
-		OnDeleteEvent(sender, (DeleteEventArgs)e);
+		MessageDialog md = new MessageDialog(this, DialogFlags.Modal, MessageType.Warning, ButtonsType.YesNo,
+		                                     "Do you want to quit? Your queue won't be saved!");
+		ResponseType result = (ResponseType)md.Run ();
+
+		if (result == ResponseType.Yes)
+			OnDeleteEvent(sender, (DeleteEventArgs)e);
+		else
+			md.Destroy ();
 	}
 }
 

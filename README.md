@@ -25,8 +25,8 @@ in the database as though it was uploaded.
 
 Now that I feel like this is a successful test, the current areas of work are:
 
- - Creating an upload queue
- - Separating upload code from interface code
+ - Creating an upload queue (done)
+ - Separating upload code from interface code (somewhat done)
  - Adding support for recursive uploads (such as adding a whole directory)
  - Adding a backup archive browser, and the ability to make file requests
 
