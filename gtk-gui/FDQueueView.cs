@@ -50,7 +50,6 @@ public partial class FDQueueView
 		this.MoveSelectedAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Move Selected");
 		w1.Add (this.MoveSelectedAction, null);
 		this.EditAction = new global::Gtk.Action ("EditAction", global::Mono.Unix.Catalog.GetString ("Edit"), null, null);
-		this.EditAction.Sensitive = false;
 		this.EditAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Edit");
 		w1.Add (this.EditAction, null);
 		this.WindowAction = new global::Gtk.Action ("WindowAction", global::Mono.Unix.Catalog.GetString ("Window"), null, null);
@@ -71,6 +70,7 @@ public partial class FDQueueView
 		this.SelectAllAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Select All");
 		w1.Add (this.SelectAllAction, "<Primary>a");
 		this.PreferencesAction = new global::Gtk.Action ("PreferencesAction", global::Mono.Unix.Catalog.GetString ("Pr_eferences…"), null, null);
+		this.PreferencesAction.Sensitive = false;
 		this.PreferencesAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Pr_eferences…");
 		w1.Add (this.PreferencesAction, null);
 		this.AddDirectoryAction = new global::Gtk.Action ("AddDirectoryAction", global::Mono.Unix.Catalog.GetString ("Add _directory…"), null, null);
@@ -113,6 +113,7 @@ public partial class FDQueueView
 		this.hbox1.BorderWidth = ((uint)(2));
 		// Container child hbox1.Gtk.Box+BoxChild
 		this.buttonAddFile = new global::Gtk.Button ();
+		this.buttonAddFile.CanDefault = true;
 		this.buttonAddFile.CanFocus = true;
 		this.buttonAddFile.Name = "buttonAddFile";
 		this.buttonAddFile.UseUnderline = true;
@@ -195,10 +196,12 @@ public partial class FDQueueView
 		}
 		this.DefaultWidth = 645;
 		this.DefaultHeight = 320;
+		this.buttonAddFile.HasDefault = true;
 		this.Show ();
 		this.AddFileAction.Activated += new global::System.EventHandler (this.OnAddFileActionActivated);
 		this.RemoveSelectedAction.Activated += new global::System.EventHandler (this.OnRemoveSelectedActionActivated);
 		this.QuitAction.Activated += new global::System.EventHandler (this.OnQuitActionActivated);
+		this.SelectAllAction.Activated += new global::System.EventHandler (this.OnSelectAllActionActivated);
 		this.AddDirectoryAction.Activated += new global::System.EventHandler (this.OnAddDirectoryActionActivated);
 		this.buttonAddFile.Clicked += new global::System.EventHandler (this.OnButtonAddFileClicked);
 		this.buttonAddDir.Clicked += new global::System.EventHandler (this.OnButtonAddDirClicked);

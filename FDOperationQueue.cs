@@ -24,6 +24,7 @@ namespace snowpack
 	{
 		private List<FDQueueItem> queue;
 		private bool stopQueue;
+		public bool wasStopped = false;
 		public string currentFile { get; set; }
 		public string currentStatus { get; set; }
 		public Guid currentGuid { get; set; }
@@ -97,7 +98,6 @@ namespace snowpack
 		
 		public void ProcessQueueWorker()
 		{
-			//TODO make this not one giant function
 			int numCompleted = 0;
 			
 			while(!stopQueue)
@@ -127,6 +127,7 @@ namespace snowpack
 				
 				numCompleted++;
 			}
+			//TODO Save Queue if processor quits
 		}
 		
 		public void ProcessFile(string fileName)
@@ -146,13 +147,28 @@ namespace snowpack
 			currentFile = item.path;
 			currentInfo = new System.IO.FileInfo(item.path);
 			
+			if (currentInfo.Length == 0) { //our file is zero bytes, Glacier won't accept it but we still want to remember
+				DataStore.InsertFile(currentItem.path,
+				                     "0",
+				                     currentInfo.Length,
+				                     currentInfo.LastWriteTimeUtc,
+				                     "0");
+				return;
+			}
+			
 			//Calculate the file's checksum
 			currentStatus = "checksum";
 			FDChecksum fileChecksum = new FDChecksum(currentItem.path);
-			fileChecksum.CalculateChecksum();
+			try {
+				fileChecksum.CalculateChecksum();
+			}
+			catch (Exception e) {
+				System.Console.WriteLine("Couldn't checksum " + fileName);
+				return;
+			}
 			currentItem.checksum = fileChecksum.checksum;
 			
-			//Verfiy we haven't uploaded before
+			//Verfiy we haven't uploaded before by comparing checksum + filesize to db
 			string archiveId = DataStore.CheckExists(currentItem.checksum, currentInfo.Length);
 			if (!String.IsNullOrEmpty(archiveId)) //if we got a response, re-insert the file to db and advance queue
 			{
@@ -169,8 +185,16 @@ namespace snowpack
 			FDGlacier glacier = new FDGlacier();
 			glacier.archiveDescription = System.IO.Path.GetFileName (currentItem.path);
 			glacier.setCallback(currentItem._updateProgress);
-			glacier.uploadFile(currentItem.path);
-			currentResult = glacier.getResult();
+			try {
+				glacier.uploadFile(currentItem.path);
+				currentResult = glacier.getResult();
+			}
+			catch (Exception e) {
+				//TODO log failure!
+				System.Console.WriteLine("Couldn't upload " + fileName);
+				currentResult = null;
+				return;
+			}
 			
 			//Store the result
 			currentStatus = "store";
@@ -181,9 +205,18 @@ namespace snowpack
 			                     currentResult.ArchiveId);
 		}
 		
+		private void SaveQueue()
+		{
+			foreach (FDQueueItem item in queue)
+			{
+				//
+			}
+		}
+		
 		public void StopQueue()
 		{
 			stopQueue = true;
+			wasStopped = true;
 		}
 	}
 }

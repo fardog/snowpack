@@ -80,6 +80,8 @@ public partial class FDQueueView : Gtk.Window
 		treeview1.AppendColumn(filename);
 		treeview1.AppendColumn(progress);
 		treeview1.Model = this.uploadQueue;
+		Gtk.TreeSelection selection = treeview1.Selection;
+		selection.Mode = Gtk.SelectionMode.Multiple;
 		
 		//Create the uploader thread
 		queueWorker = new BackgroundWorker();
@@ -87,7 +89,6 @@ public partial class FDQueueView : Gtk.Window
 		queueWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_queueDone);
 		if(!queueWorker.IsBusy)
 		{
-			statusbar1.Push (statusbar1.GetContextId("workerStart"), "Upload worker thread started…");
 			queueWorker.RunWorkerAsync();
 		}
 		
@@ -106,9 +107,21 @@ public partial class FDQueueView : Gtk.Window
 	
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
 	{
-		//TODO Save File Queue
-		Application.Quit ();
-		a.RetVal = true;
+		Gtk.MessageDialog reallyQuit = new Gtk.MessageDialog(this,
+		                                                     DialogFlags.Modal,
+		                                                     MessageType.Question,
+		                                                     ButtonsType.YesNo,
+		                                                     "Are you sure you want to quit? Your file queue won't be saved!");
+		
+		if((ResponseType)reallyQuit.Run () == ResponseType.Yes) {
+			reallyQuit.Destroy();
+			a.RetVal = false;
+			Application.Quit ();
+		}
+		else {
+			a.RetVal = true;
+			reallyQuit.Destroy();
+		}
 	}
 	
 	protected void enqueue(string filePath)
@@ -172,30 +185,36 @@ public partial class FDQueueView : Gtk.Window
 	private void _updateUIWork(object sender, DoWorkEventArgs e)
 	{
 		bool processing = false;
+		uint ContextID = 1;
 		
 		while (true) {
 			switch(operationQueue.currentStatus)
 			{
 				case "checksum":
-					statusbar1.Push (statusbar1.GetContextId("checksum"), "Checksumming \"" +
+					statusbar1.Pop (ContextID);
+					statusbar1.Push (ContextID, "Checksumming \"" +
 					                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
 					processing = true;
 					break;
 				case "upload":
-					statusbar1.Push (statusbar1.GetContextId("upload"), "Uploading \"" +
+					statusbar1.Pop (ContextID);
+					statusbar1.Push (ContextID, "Uploading \"" +
 					                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
 					progressbar1.Fraction = (float)operationQueue.currentItem.progress / 100;
 					processing = true;
 					break;
 				case "store":
-					statusbar1.Push (statusbar1.GetContextId("store"), "Indexing \"" + 
+					statusbar1.Pop (ContextID);
+					statusbar1.Push (ContextID, "Indexing \"" + 
 					                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
 					processing = true;
 					break;
 				default:
-					statusbar1.Push (statusbar1.GetContextId("idle"), "");
-					progressbar1.Fraction = 0;
-					processing = false;
+					if(processing) {
+						statusbar1.Pop(ContextID);
+						progressbar1.Fraction = 0;
+						processing = false;
+					}
 					break;
 			}
 			
@@ -232,9 +251,12 @@ public partial class FDQueueView : Gtk.Window
 		                                                          FileChooserAction.Open,
 		                                                          "Cancel",ResponseType.Cancel,
 		                                                          "Add File",ResponseType.Accept);
+		addFile.SelectMultiple = true;
+		
 		if (addFile.Run() == (int)ResponseType.Accept)
 		{
-			this.enqueue (addFile.Filename);
+			foreach (string f in addFile.Filenames)
+				this.enqueue (f);
 		}
 		
 		addFile.Destroy();
@@ -330,6 +352,12 @@ public partial class FDQueueView : Gtk.Window
 	protected void OnButtonAddDirClicked (object sender, System.EventArgs e)
 	{
 		AddDirDialog(sender, e);
+	}
+
+	protected void OnSelectAllActionActivated (object sender, System.EventArgs e)
+	{
+		Gtk.TreeSelection selection = treeview1.Selection;
+		selection.SelectAll();
 	}
 }
 

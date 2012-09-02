@@ -38,7 +38,6 @@
       <action id="EditAction">
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">Edit</property>
-        <property name="Sensitive">False</property>
         <property name="ShortLabel" translatable="yes">Edit</property>
       </action>
       <action id="WindowAction">
@@ -70,10 +69,12 @@
         <property name="Accelerator">&lt;Primary&gt;a</property>
         <property name="Label" translatable="yes">Select All</property>
         <property name="ShortLabel" translatable="yes">Select All</property>
+        <signal name="Activated" handler="OnSelectAllActionActivated" />
       </action>
       <action id="PreferencesAction">
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">Pr_eferences…</property>
+        <property name="Sensitive">False</property>
         <property name="ShortLabel" translatable="yes">Pr_eferences…</property>
       </action>
       <action id="AddDirectoryAction">
@@ -146,6 +147,8 @@
             <child>
               <widget class="Gtk.Button" id="buttonAddFile">
                 <property name="MemberName" />
+                <property name="CanDefault">True</property>
+                <property name="HasDefault">True</property>
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
                 <property name="Label" translatable="yes">Add _File…</property>

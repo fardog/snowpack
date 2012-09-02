@@ -99,6 +99,8 @@ namespace snowpack
 			catch(Exception e)
 			{
 				System.Console.WriteLine("Error uploading file: " + e.Message);
+				System.Console.WriteLine("…on file: " + filePath);
+				throw e;
 			}
 		}
 		
