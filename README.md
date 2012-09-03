@@ -48,15 +48,11 @@ The future will be:
 Misc
 ----
 
-This requires an App.config file with the following properties in the
-*appSettings* section:
-
- -	*AWSAccessKey*
- -	*AWSSecretKey*
- -	*AWSRegion* (e.g. "us-west-2", "us-east-1", etc.)
- -	*GlacierVaultName*
-
-This will be moved to a easily configurable interface in the future.
+snowpack requires AWS credentials and a Glacier vault, and will ask for them
+on first run. You can create the necessary credentials and vault using your
+AWS console. I'd recommend reading the 
+[Getting Started](http://aws.amazon.com/glacier/) guide for Glacier prior to
+trying out snowpack.
 
 
 Warranty
