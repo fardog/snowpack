@@ -30,8 +30,6 @@ namespace snowpack
 {
 	public class FDGlacier
 	{
-		private FDFileEncryption encryptionStream;
-		private AmazonGlacierClient glacierClient;
 		private ArchiveTransferManager transferManager;
 		private RegionEndpoint region;
 		private UploadResult result;
@@ -40,35 +38,25 @@ namespace snowpack
 		public string archiveDescription { get; set; }
 		public int progress { get; set; }
 
-		public FDGlacier ()
+		public FDGlacier (FDUserSettings settings)
 		{
-			encryptionStream = new FDFileEncryption ();
+			this.vaultName = settings.AWSGlacierVaultName;
 
-			//Load settings from App.config
-			NameValueCollection appConfig = ConfigurationManager.AppSettings;
-			this.vaultName = appConfig["GlacierVaultName"];
-
-			switch (appConfig ["AWSRegion"]) {
-			case "us-west-1":
+			switch (settings.AWSRegion) {
+			case FDUserSettings.AWSRegionIndex.USWest1:
 				region = RegionEndpoint.USWest1;
 				break;
-			case "us-west-2":
+			case FDUserSettings.AWSRegionIndex.USWest2:
 				region = RegionEndpoint.USWest2;
 				break;
-			case "us-east-1":
+			case FDUserSettings.AWSRegionIndex.USEast1:
 				region = RegionEndpoint.USEast1;
 				break;
-			case "eu-west-1":
+			case FDUserSettings.AWSRegionIndex.EUWest1:
 				region = RegionEndpoint.EUWest1;
 				break;
-			case "ap-northeast-1":
+			case FDUserSettings.AWSRegionIndex.APNortheast1:
 				region = RegionEndpoint.APNortheast1;
-				break;
-			case "ap-southeast-1":
-				region = RegionEndpoint.APSoutheast1;
-				break;
-			case "sa-east-1":
-				region = RegionEndpoint.SAEast1;
 				break;
 			default:
 				region = RegionEndpoint.USEast1;
@@ -78,7 +66,7 @@ namespace snowpack
 			//Instantiate the transfer manager with our settings
 			//TODO: Switch to glacier client so we can abort this damn thing
 			//glacierClient = new AmazonGlacierClient(appConfig["AWSAccessKey"], appConfig["AWSSecretKey"], region);
-			transferManager = new ArchiveTransferManager(appConfig["AWSAccessKey"], appConfig["AWSSecretKey"], region);
+			transferManager = new ArchiveTransferManager(settings.AWSAccessKey, settings.AWSSecretKey, region);
 			
 			options = new UploadOptions();
 			progress = 0;

@@ -198,7 +198,7 @@ public partial class FDQueueView
 			this.Child.ShowAll ();
 		}
 		this.DefaultWidth = 724;
-		this.DefaultHeight = 320;
+		this.DefaultHeight = 369;
 		this.buttonAddFile.HasDefault = true;
 		this.Show ();
 		this.AddFileAction.Activated += new global::System.EventHandler (this.OnAddFileActionActivated);

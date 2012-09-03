@@ -59,7 +59,7 @@ public partial class FDQueueView : Gtk.Window
 		Build ();
 		UserSettings = new FDUserSettings();
 		DataStore = new FDDataStore(UserSettings.CurrentDataStore);
-		operationQueue = new FDOperationQueue(DataStore);
+		operationQueue = new FDOperationQueue(DataStore, UserSettings);
 		treeview1.Selection.Changed += RemoveSensitive;
 		
 		//Create the item list
@@ -82,6 +82,16 @@ public partial class FDQueueView : Gtk.Window
 		treeview1.Model = this.uploadQueue;
 		Gtk.TreeSelection selection = treeview1.Selection;
 		selection.Mode = Gtk.SelectionMode.Multiple;
+		
+		//Verify our settings. If they aren't present, we need to show the settings dialog
+		if(String.IsNullOrWhiteSpace(UserSettings.AWSAccessKey) ||
+		   String.IsNullOrWhiteSpace(UserSettings.AWSSecretKey) ||
+		   String.IsNullOrWhiteSpace(UserSettings.AWSGlacierVaultName))
+		{
+			FDPreferences preferences = new FDPreferences(this, DialogFlags.Modal, UserSettings, true);
+			preferences.Run();
+			preferences.Destroy();
+		}
 		
 		//Create the uploader thread
 		queueWorker = new BackgroundWorker();
@@ -114,13 +124,14 @@ public partial class FDQueueView : Gtk.Window
 	{
 		Gtk.MessageDialog reallyQuit = new Gtk.MessageDialog(this,
 		                                                     DialogFlags.Modal,
-		                                                     MessageType.Question,
+		                                                     MessageType.Warning,
 		                                                     ButtonsType.YesNo,
-		                                                     "Are you sure you want to quit? Your file queue won't be saved!");
+		                                                     "Do you want to quit? This will stop all transfers and clear your queue!");
 		
 		if((ResponseType)reallyQuit.Run () == ResponseType.Yes) {
 			reallyQuit.Destroy();
 			operationQueue.StopQueue();
+			Thread.Sleep (1000); //wait for queue shutdown
 			a.RetVal = false;
 			Application.Quit ();
 		}
@@ -342,14 +353,7 @@ public partial class FDQueueView : Gtk.Window
 
 	protected void OnQuitActionActivated (object sender, System.EventArgs e)
 	{
-		MessageDialog md = new MessageDialog(this, DialogFlags.Modal, MessageType.Warning, ButtonsType.YesNo,
-		                                     "Do you want to quit? This will stop all transfers and clear your queue!");
-		ResponseType result = (ResponseType)md.Run ();
-
-		if (result == ResponseType.Yes)
-			OnDeleteEvent(sender, (DeleteEventArgs)e);
-		else
-			md.Destroy ();
+		OnDeleteEvent(this, new DeleteEventArgs());
 	}
 
 	protected void OnAddDirectoryActionActivated (object sender, System.EventArgs e)

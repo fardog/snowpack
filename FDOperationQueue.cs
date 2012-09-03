@@ -34,15 +34,18 @@ namespace snowpack
 		public FDQueueItem currentItem { get; set; }
 		public Amazon.Glacier.Transfer.UploadResult currentResult { get; set; }
 		private FDDataStore DataStore;
+		private FDUserSettings settings;
 		public Queue<FDQueueItem> finished;
 		
-		public FDOperationQueue (FDDataStore store)
+		public FDOperationQueue (FDDataStore store, FDUserSettings userset)
 		{
 			queue = new List<FDQueueItem>();
 			finished = new Queue<FDQueueItem>();
 			stopQueue = false;
 			DataStore = store;
+			settings = userset;
 			currentStatus = "idle";
+			currentItem = null;
 		}
 		
 		public int Add(FDQueueItem item)
@@ -186,7 +189,7 @@ namespace snowpack
 			
 			//Upload the file
 			currentStatus = "upload";
-			FDGlacier glacier = new FDGlacier();
+			FDGlacier glacier = new FDGlacier(settings);
 			glacier.archiveDescription = System.IO.Path.GetFileName (currentItem.path);
 			glacier.setCallback(currentItem._updateProgress);
 			try {
@@ -212,8 +215,9 @@ namespace snowpack
 		
 		private void SaveQueue()
 		{
-			if(currentItem.whenCompleted.Ticks == 0) //we haven't uploaded the current item, but we did pop it from the stack
-				DataStore.StoreQueue(currentItem);
+			if(currentItem != null) 
+				if(currentItem.whenCompleted.Ticks == 0) //we haven't uploaded the current item, but we did pop it from the stack
+					DataStore.StoreQueue(currentItem);
 			foreach (FDQueueItem item in queue)
 			{
 				DataStore.StoreQueue(item);

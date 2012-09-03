@@ -32,7 +32,7 @@ Now that I feel like this is a successful test, the current areas of work are:
  - Adding support for recursive/directory uploads *(done)*
  - Proper error recovery (upload fails, etc.)
  - More thorough upload queue management, save on quit
- - GUI managed preferences for AWS keys and etc.
+ - GUI managed preferences for AWS keys and etc. *(done)*
  - Adding a backup archive browser, and the ability to make file requests
 
 The future will be:

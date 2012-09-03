@@ -8,7 +8,7 @@
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <widget-library name="../bin/Debug/snowpack.exe" internal="true" />
   </import>
-  <widget class="Gtk.Window" id="FDQueueView" design-size="724 320">
+  <widget class="Gtk.Window" id="FDQueueView" design-size="724 369">
     <action-group name="Default">
       <action id="QueueAction">
         <property name="Type">Action</property>
@@ -75,7 +75,6 @@
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Primary&gt;comma</property>
         <property name="Label" translatable="yes">Pr_eferences…</property>
-        <property name="Sensitive">False</property>
         <property name="ShortLabel" translatable="yes">Pr_eferences…</property>
         <signal name="Activated" handler="OnPreferencesActionActivated" />
       </action>
@@ -267,7 +266,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="snowpack.FDPreferences" design-size="636 239">
+  <widget class="Gtk.Dialog" id="snowpack.FDPreferences" design-size="636 279">
     <property name="MemberName" />
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -277,26 +276,13 @@
         <property name="MemberName" />
         <property name="BorderWidth">8</property>
         <child>
-          <widget class="Gtk.Label" id="labelTitle">
+          <widget class="Gtk.Fixed" id="fixed1">
             <property name="MemberName" />
-            <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">&lt;span font_size='large' font_weight='bold' &gt;snowpack Settings&lt;/span&gt;</property>
-            <property name="UseMarkup">True</property>
+            <property name="HeightRequest">15</property>
+            <property name="HasWindow">False</property>
           </widget>
           <packing>
             <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-            <property name="Padding">2</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.HSeparator" id="hseparator1">
-            <property name="MemberName" />
-          </widget>
-          <packing>
-            <property name="Position">1</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -310,16 +296,21 @@
             <child>
               <widget class="Gtk.Table" id="table1">
                 <property name="MemberName" />
-                <property name="NRows">3</property>
+                <property name="NRows">4</property>
                 <property name="NColumns">2</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
                 <property name="BorderWidth">8</property>
                 <child>
-                  <widget class="Gtk.ComboBox" id="combobox1">
+                  <widget class="Gtk.ComboBox" id="comboboxAWSRegion">
                     <property name="MemberName" />
                     <property name="IsTextCombo">True</property>
-                    <property name="Items" translatable="yes" />
+                    <property name="Items" translatable="yes">US East (N. Virginia)
+US West (Northern California)
+US West (Oregon)
+EU (Ireland)
+Asia Pacific (Tokyo)</property>
+                    <property name="Active">0</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">2</property>
@@ -338,13 +329,35 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="entry1">
+                  <widget class="Gtk.Entry" id="entryAWSAccessKey">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">•</property>
                   </widget>
                   <packing>
+                    <property name="LeftAttach">1</property>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">False</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">True</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Entry" id="entryAWSGlacierVaultName">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="IsEditable">True</property>
+                    <property name="InvisibleChar">•</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">3</property>
+                    <property name="BottomAttach">4</property>
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">True</property>
@@ -359,10 +372,11 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="entry2">
+                  <widget class="Gtk.Entry" id="entryAWSSecretKey">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
+                    <property name="Visibility">False</property>
                     <property name="InvisibleChar">•</property>
                   </widget>
                   <packing>
@@ -388,7 +402,7 @@
                     <property name="LabelProp" translatable="yes">Access Key</property>
                   </widget>
                   <packing>
-                    <property name="AutoSize">True</property>
+                    <property name="AutoSize">False</property>
                     <property name="XOptions">Fill</property>
                     <property name="YOptions">Fill</property>
                     <property name="XExpand">False</property>
@@ -439,6 +453,26 @@
                     <property name="YShrink">False</property>
                   </packing>
                 </child>
+                <child>
+                  <widget class="Gtk.Label" id="labelVault">
+                    <property name="MemberName" />
+                    <property name="Xalign">0</property>
+                    <property name="LabelProp" translatable="yes">Glacier Vault Name</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">3</property>
+                    <property name="BottomAttach">4</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
               </widget>
             </child>
             <child>
@@ -452,11 +486,23 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">2</property>
+            <property name="Position">1</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
             <property name="Padding">2</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Label" id="labelError">
+            <property name="MemberName" />
+            <property name="Xalign">1</property>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
           </packing>
         </child>
       </widget>
@@ -492,7 +538,9 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="ResponseId">-5</property>
+            <property name="ResponseId">-1</property>
+            <signal name="Clicked" handler="OnButtonOkClicked" />
+            <signal name="Activated" handler="OnButtonOkActivated" />
             <property name="label">gtk-ok</property>
           </widget>
           <packing>
