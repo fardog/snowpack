@@ -16,6 +16,7 @@ public partial class FDQueueView
 	private global::Gtk.Action SelectAllAction;
 	private global::Gtk.Action PreferencesAction;
 	private global::Gtk.Action AddDirectoryAction;
+	private global::Gtk.Action PauseQueueAction;
 	private global::Gtk.VBox vbox1;
 	private global::Gtk.MenuBar menubar1;
 	private global::Gtk.ScrolledWindow GtkScrolledWindow;
@@ -76,6 +77,9 @@ public partial class FDQueueView
 		this.AddDirectoryAction = new global::Gtk.Action ("AddDirectoryAction", global::Mono.Unix.Catalog.GetString ("Add _directory…"), null, null);
 		this.AddDirectoryAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Add directory…");
 		w1.Add (this.AddDirectoryAction, null);
+		this.PauseQueueAction = new global::Gtk.Action ("PauseQueueAction", global::Mono.Unix.Catalog.GetString ("Pa_use queue"), null, null);
+		this.PauseQueueAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Pa_use queue");
+		w1.Add (this.PauseQueueAction, "<Primary><Alt>p");
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "FDQueueView";
@@ -194,7 +198,7 @@ public partial class FDQueueView
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();
 		}
-		this.DefaultWidth = 645;
+		this.DefaultWidth = 724;
 		this.DefaultHeight = 320;
 		this.buttonAddFile.HasDefault = true;
 		this.Show ();

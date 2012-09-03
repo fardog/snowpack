@@ -24,7 +24,9 @@ namespace snowpack
 	{
 		private List<FDQueueItem> queue;
 		private bool stopQueue;
+		private bool pauseQueue;
 		public bool wasStopped = false;
+		public bool paused = false;
 		public string currentFile { get; set; }
 		public string currentStatus { get; set; }
 		public Guid currentGuid { get; set; }
@@ -102,9 +104,9 @@ namespace snowpack
 			
 			while(!stopQueue)
 			{
-				if(queue.Count == 0) //if there's nothing to do at the moment
+				if(queue.Count == 0 || pauseQueue) //if there's nothing to do at the moment, or if we're paused
 				{
-					currentStatus = "idle";
+					currentStatus = pauseQueue ? "pause" : "idle";
 					Thread.Sleep (1000);
 					continue;
 				}
@@ -120,6 +122,8 @@ namespace snowpack
 				//pass to our (potentially) recursive function for upload
 				this.ProcessFile(currentFile);
 				
+				//Mark current and finished item as uploaded
+				finishItem.whenCompleted = currentItem.whenCompleted = DateTime.UtcNow;
 				//Add the parent item to the "finished" queue
 				finished.Enqueue(finishItem);
 				
@@ -192,6 +196,7 @@ namespace snowpack
 			catch (Exception e) {
 				//TODO log failure!
 				System.Console.WriteLine("Couldn't upload " + fileName);
+				System.Console.WriteLine("…error reported: " + e.Message);
 				currentResult = null;
 				return;
 			}
@@ -207,9 +212,11 @@ namespace snowpack
 		
 		private void SaveQueue()
 		{
+			if(currentItem.whenCompleted.Ticks == 0) //we haven't uploaded the current item, but we did pop it from the stack
+				DataStore.StoreQueue(currentItem);
 			foreach (FDQueueItem item in queue)
 			{
-				//
+				DataStore.StoreQueue(item);
 			}
 		}
 		
@@ -217,6 +224,15 @@ namespace snowpack
 		{
 			stopQueue = true;
 			wasStopped = true;
+			this.SaveQueue();
+		}
+		
+		public bool PauseQueue() 
+		{
+			this.pauseQueue = !this.pauseQueue;
+			this.paused = this.pauseQueue;
+			
+			return this.paused;
 		}
 	}
 }

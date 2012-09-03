@@ -8,7 +8,7 @@
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <widget-library name="../bin/Debug/snowpack.exe" internal="true" />
   </import>
-  <widget class="Gtk.Window" id="FDQueueView" design-size="645 320">
+  <widget class="Gtk.Window" id="FDQueueView" design-size="724 320">
     <action-group name="Default">
       <action id="QueueAction">
         <property name="Type">Action</property>
@@ -82,6 +82,12 @@
         <property name="Label" translatable="yes">Add _directory…</property>
         <property name="ShortLabel" translatable="yes">Add directory…</property>
         <signal name="Activated" handler="OnAddDirectoryActionActivated" />
+      </action>
+      <action id="PauseQueueAction">
+        <property name="Type">Action</property>
+        <property name="Accelerator">&lt;Primary&gt;&lt;Alt&gt;p</property>
+        <property name="Label" translatable="yes">Pa_use queue</property>
+        <property name="ShortLabel" translatable="yes">Pa_use queue</property>
       </action>
     </action-group>
     <property name="MemberName" />

@@ -115,6 +115,7 @@ public partial class FDQueueView : Gtk.Window
 		
 		if((ResponseType)reallyQuit.Run () == ResponseType.Yes) {
 			reallyQuit.Destroy();
+			operationQueue.StopQueue();
 			a.RetVal = false;
 			Application.Quit ();
 		}
@@ -179,7 +180,9 @@ public partial class FDQueueView : Gtk.Window
 	
 	private void _queueDone(object sender, RunWorkerCompletedEventArgs e)
 	{
-		throw new Exception("Queue worker thread exited! That isn't supposed to happen!");
+		if(operationQueue.wasStopped) //we were stopped intentionally
+			return;
+		else throw new Exception("Upload queue thread stopped unexpectedly.");
 	}
 	
 	private void _updateUIWork(object sender, DoWorkEventArgs e)
@@ -335,7 +338,7 @@ public partial class FDQueueView : Gtk.Window
 	protected void OnQuitActionActivated (object sender, System.EventArgs e)
 	{
 		MessageDialog md = new MessageDialog(this, DialogFlags.Modal, MessageType.Warning, ButtonsType.YesNo,
-		                                     "Do you want to quit? Your queue won't be saved!");
+		                                     "Do you want to quit? This will stop all transfers and clear your queue!");
 		ResponseType result = (ResponseType)md.Run ();
 
 		if (result == ResponseType.Yes)

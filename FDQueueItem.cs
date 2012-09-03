@@ -32,7 +32,7 @@ namespace snowpack
 		{
 			path = filePath;
 			progress = 0;
-			whenQueued = DateTime.Now;
+			whenQueued = DateTime.UtcNow;
 			kind = fileType;
 			checksum = null;
 			guid = Guid.NewGuid();

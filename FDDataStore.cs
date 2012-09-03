@@ -80,7 +80,14 @@ namespace snowpack
 				"file_size INTEGER," +
 				"file_modified INTEGER," +
 				"file_archiveid VARCHAR(138)," +
-				"file_directory INTEGER );";
+				"file_directory INTEGER," +
+				"file_uploaded INTEGER );" +
+				"CREATE TABLE IF NOT EXISTS queue ( " +
+				"queue_id INTEGER PRIMARY KEY," +
+				"queue_path VARCHAR(1024)," +
+				"queue_guid CHAR(36)," +
+				"queue_type VARCHAR(10)," +
+				"queue_enqueued INTEGER );";
 			
 			int retvalue = 0;
 			
@@ -139,9 +146,14 @@ namespace snowpack
 				size.ToString() + ", " +
 				modified.Ticks.ToString() + ", " +
 				"\"" + archiveId + "\", " + 
-				parent.ToString() + ");";
+				parent.ToString() + ", " +
+				DateTime.UtcNow.Ticks.ToString() + ");";
 			
 			return insertFile.ExecuteNonQuery();
+		}
+		
+		public int StoreQueue(FDQueueItem item) {
+			return 0;
 		}
 		
 		private Int64 insertDirectoryTree(string[] directories)
