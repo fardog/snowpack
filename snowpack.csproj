@@ -64,6 +64,8 @@
     <Compile Include="FDQueueItem.cs" />
     <Compile Include="FDQueueView.cs" />
     <Compile Include="gtk-gui\FDQueueView.cs" />
+    <Compile Include="FDPreferences.cs" />
+    <Compile Include="gtk-gui\snowpack.FDPreferences.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

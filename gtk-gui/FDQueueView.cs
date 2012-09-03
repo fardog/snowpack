@@ -71,9 +71,8 @@ public partial class FDQueueView
 		this.SelectAllAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Select All");
 		w1.Add (this.SelectAllAction, "<Primary>a");
 		this.PreferencesAction = new global::Gtk.Action ("PreferencesAction", global::Mono.Unix.Catalog.GetString ("Pr_eferences…"), null, null);
-		this.PreferencesAction.Sensitive = false;
 		this.PreferencesAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Pr_eferences…");
-		w1.Add (this.PreferencesAction, null);
+		w1.Add (this.PreferencesAction, "<Primary>comma");
 		this.AddDirectoryAction = new global::Gtk.Action ("AddDirectoryAction", global::Mono.Unix.Catalog.GetString ("Add _directory…"), null, null);
 		this.AddDirectoryAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Add directory…");
 		w1.Add (this.AddDirectoryAction, null);
@@ -206,6 +205,7 @@ public partial class FDQueueView
 		this.RemoveSelectedAction.Activated += new global::System.EventHandler (this.OnRemoveSelectedActionActivated);
 		this.QuitAction.Activated += new global::System.EventHandler (this.OnQuitActionActivated);
 		this.SelectAllAction.Activated += new global::System.EventHandler (this.OnSelectAllActionActivated);
+		this.PreferencesAction.Activated += new global::System.EventHandler (this.OnPreferencesActionActivated);
 		this.AddDirectoryAction.Activated += new global::System.EventHandler (this.OnAddDirectoryActionActivated);
 		this.buttonAddFile.Clicked += new global::System.EventHandler (this.OnButtonAddFileClicked);
 		this.buttonAddDir.Clicked += new global::System.EventHandler (this.OnButtonAddDirClicked);

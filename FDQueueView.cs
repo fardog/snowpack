@@ -66,7 +66,7 @@ public partial class FDQueueView : Gtk.Window
 		items = new List<ListItem>();
 		this.uploadQueue = new ListStore(typeof(string), typeof(string), typeof(Guid));
 		
-		//Create the tree view columns
+		//Create the tree view columns and misc
 		TreeViewColumn filename = new TreeViewColumn();
 		TreeViewColumn progress = new TreeViewColumn();
 		filename.Title = "Filename";
@@ -103,6 +103,11 @@ public partial class FDQueueView : Gtk.Window
 		
 		//Housekeeping functions for window
 		this.DeleteEvent += OnDeleteEvent;
+		
+		
+		//misc testing crap
+		System.Console.WriteLine (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+		System.Console.WriteLine (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
 	}
 	
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
@@ -361,6 +366,19 @@ public partial class FDQueueView : Gtk.Window
 	{
 		Gtk.TreeSelection selection = treeview1.Selection;
 		selection.SelectAll();
+	}
+
+	protected void OnPreferencesActionActivated (object sender, System.EventArgs e)
+	{
+		FDPreferences preferences = new FDPreferences(this, DialogFlags.Modal, UserSettings);
+		
+		if((ResponseType)preferences.Run () == ResponseType.Ok) {
+			System.Console.WriteLine("Preferences would be saved");
+		}
+		else {
+			System.Console.WriteLine("Preferences would be discarded");
+		}
+		preferences.Destroy();
 	}
 }
 

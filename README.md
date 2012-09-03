@@ -9,8 +9,10 @@ Intro
 -----
 
 **snowpack** is (someday) a complete GUI client and backup solution for
-Amazon Glacier. Currently, it is a very early test while I bring my C# skills
-back up to current. Please don't use it until then, you will be disappointed.
+Amazon Glacier. Right now it's a heavy work-in-progress; able to store files
+but not retrieve them. 
+
+**snowpack is incomplete, and not recommended for anyone's use at the moment.**
 
 Status
 ------
