@@ -17,6 +17,9 @@ public partial class FDQueueView
 	private global::Gtk.Action PreferencesAction;
 	private global::Gtk.Action AddDirectoryAction;
 	private global::Gtk.Action PauseQueueAction;
+	private global::Gtk.Action WindowAction1;
+	private global::Gtk.Action ArchiveBrowserAction;
+	private global::Gtk.Action snowpackOnGithubAction;
 	private global::Gtk.VBox vbox1;
 	private global::Gtk.MenuBar menubar1;
 	private global::Gtk.ScrolledWindow GtkScrolledWindow;
@@ -58,7 +61,6 @@ public partial class FDQueueView
 		this.WindowAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Window");
 		w1.Add (this.WindowAction, null);
 		this.HelpAction = new global::Gtk.Action ("HelpAction", global::Mono.Unix.Catalog.GetString ("_Help"), null, null);
-		this.HelpAction.Sensitive = false;
 		this.HelpAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Help");
 		w1.Add (this.HelpAction, null);
 		this.QuitAction = new global::Gtk.Action ("QuitAction", global::Mono.Unix.Catalog.GetString ("_Quit…"), null, null);
@@ -79,6 +81,16 @@ public partial class FDQueueView
 		this.PauseQueueAction = new global::Gtk.Action ("PauseQueueAction", global::Mono.Unix.Catalog.GetString ("Pa_use queue"), null, null);
 		this.PauseQueueAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Pa_use queue");
 		w1.Add (this.PauseQueueAction, "<Primary><Alt>p");
+		this.WindowAction1 = new global::Gtk.Action ("WindowAction1", global::Mono.Unix.Catalog.GetString ("Window"), null, null);
+		this.WindowAction1.ShortLabel = global::Mono.Unix.Catalog.GetString ("Window");
+		w1.Add (this.WindowAction1, null);
+		this.ArchiveBrowserAction = new global::Gtk.Action ("ArchiveBrowserAction", global::Mono.Unix.Catalog.GetString ("Archive Browser…"), null, null);
+		this.ArchiveBrowserAction.Sensitive = false;
+		this.ArchiveBrowserAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Archive Browser…");
+		w1.Add (this.ArchiveBrowserAction, "<Primary>b");
+		this.snowpackOnGithubAction = new global::Gtk.Action ("snowpackOnGithubAction", global::Mono.Unix.Catalog.GetString ("snowpack on Github…"), null, null);
+		this.snowpackOnGithubAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("snowpack on Github…");
+		w1.Add (this.snowpackOnGithubAction, null);
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "FDQueueView";
@@ -89,7 +101,7 @@ public partial class FDQueueView
 		this.vbox1.Name = "vbox1";
 		this.vbox1.Spacing = 6;
 		// Container child vbox1.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='QueueAction' action='QueueAction'><menuitem name='AddFileAction' action='AddFileAction'/><menuitem name='AddDirectoryAction' action='AddDirectoryAction'/><separator/><menuitem name='MoveSelectedAction' action='MoveSelectedAction'/><menuitem name='RemoveSelectedAction' action='RemoveSelectedAction'/><separator/><menuitem name='QuitAction' action='QuitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='SelectAllAction' action='SelectAllAction'/><separator/><menuitem name='PreferencesAction' action='PreferencesAction'/></menu><menu name='WindowAction' action='WindowAction'/><menu name='HelpAction' action='HelpAction'><menuitem name='AboutAction' action='AboutAction'/></menu></menubar></ui>");
+		this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='QueueAction' action='QueueAction'><menuitem name='AddFileAction' action='AddFileAction'/><menuitem name='AddDirectoryAction' action='AddDirectoryAction'/><separator/><menuitem name='MoveSelectedAction' action='MoveSelectedAction'/><menuitem name='RemoveSelectedAction' action='RemoveSelectedAction'/><separator/><menuitem name='QuitAction' action='QuitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='SelectAllAction' action='SelectAllAction'/><separator/><menuitem name='PreferencesAction' action='PreferencesAction'/></menu><menu name='WindowAction1' action='WindowAction1'><menuitem name='ArchiveBrowserAction' action='ArchiveBrowserAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='snowpackOnGithubAction' action='snowpackOnGithubAction'/><separator/><menuitem name='AboutAction' action='AboutAction'/></menu></menubar></ui>");
 		this.menubar1 = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/menubar1")));
 		this.menubar1.Name = "menubar1";
 		this.vbox1.Add (this.menubar1);
@@ -204,9 +216,12 @@ public partial class FDQueueView
 		this.AddFileAction.Activated += new global::System.EventHandler (this.OnAddFileActionActivated);
 		this.RemoveSelectedAction.Activated += new global::System.EventHandler (this.OnRemoveSelectedActionActivated);
 		this.QuitAction.Activated += new global::System.EventHandler (this.OnQuitActionActivated);
+		this.AboutAction.Activated += new global::System.EventHandler (this.OnAboutActionActivated);
 		this.SelectAllAction.Activated += new global::System.EventHandler (this.OnSelectAllActionActivated);
 		this.PreferencesAction.Activated += new global::System.EventHandler (this.OnPreferencesActionActivated);
 		this.AddDirectoryAction.Activated += new global::System.EventHandler (this.OnAddDirectoryActionActivated);
+		this.ArchiveBrowserAction.Activated += new global::System.EventHandler (this.OnArchiveBrowserActionActivated);
+		this.snowpackOnGithubAction.Activated += new global::System.EventHandler (this.OnSnowpackOnGithubActionActivated);
 		this.buttonAddFile.Clicked += new global::System.EventHandler (this.OnButtonAddFileClicked);
 		this.buttonAddDir.Clicked += new global::System.EventHandler (this.OnButtonAddDirClicked);
 		this.buttonRemove.Clicked += new global::System.EventHandler (this.OnButtonRemoveClicked);

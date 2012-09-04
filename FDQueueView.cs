@@ -64,7 +64,7 @@ public partial class FDQueueView : Gtk.Window
 		
 		//Create the item list
 		items = new List<ListItem>();
-		this.uploadQueue = new ListStore(typeof(string), typeof(string), typeof(Guid));
+		this.uploadQueue = new ListStore(typeof(string), typeof(string), typeof(Guid), typeof(int));
 		
 		//Create the tree view columns and misc
 		TreeViewColumn filename = new TreeViewColumn();
@@ -115,13 +115,20 @@ public partial class FDQueueView : Gtk.Window
 		this.DeleteEvent += OnDeleteEvent;
 		
 		
-		//misc testing crap
-		System.Console.WriteLine (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
-		System.Console.WriteLine (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+		//System.Console.WriteLine (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+		//System.Console.WriteLine (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
 	}
 	
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
 	{
+		//If our queue is empty, just quit
+		if(operationQueue.QueueSize() == 0) {
+			Application.Quit ();
+			a.RetVal = false;
+			return;
+		}
+		
+		//Otherwise, we need to prompt the user
 		Gtk.MessageDialog reallyQuit = new Gtk.MessageDialog(this,
 		                                                     DialogFlags.Modal,
 		                                                     MessageType.Warning,
@@ -172,12 +179,18 @@ public partial class FDQueueView : Gtk.Window
 			Guid guid = (Guid)uploadQueue.GetValue (iter, 2);
 			if(operationQueue.Remove (guid)) //only remove from the tree if we can remove from the opqueue
 				uploadQueue.Remove (ref iter);
-			else uploadQueue.SetValue(iter, 1, "Not in Queue"); //we couldn't find it
+			else if ((int)uploadQueue.GetValue(iter, 3) == FDItemStatus.FinishedUploading) //it's finished, so we can remove
+				uploadQueue.Remove (ref iter);
+			else { //we couldn't find it, set an error
+				uploadQueue.SetValue (iter, 1, "Not in Queue"); 
+				uploadQueue.SetValue (iter, 3, FDItemStatus.Error);
+				//TODO Log error if the queue messes up
+			}
 		}
 	}
 	
 	//changes the "progress" secion on the tree view for the provided guid
-	private void updateTree(Guid guid, string message)
+	private void updateTree(Guid guid, string message, int status)
 	{
 		ListItem toUpdate = items.Find (
 			delegate(ListItem it) {
@@ -185,8 +198,10 @@ public partial class FDQueueView : Gtk.Window
 			}
 		);
 		
-		if(!String.IsNullOrEmpty(toUpdate.file)) 
-			treeview1.Model.SetValue(toUpdate.iter, 1, message);
+		if(!String.IsNullOrEmpty(toUpdate.file)) {
+			treeview1.Model.SetValue (toUpdate.iter, 1, message);
+			treeview1.Model.SetValue (toUpdate.iter, 3, status);
+		}
 	}
 	
 	private void _queueWork(object sender, DoWorkEventArgs e)
@@ -239,17 +254,17 @@ public partial class FDQueueView : Gtk.Window
 			
 			if(operationQueue.finished.Count > 0) { //if we have finished queue items to deal with
 				FDQueueItem finishItem = operationQueue.finished.Dequeue();
-				updateTree (finishItem.guid, "Finished");
+				updateTree (finishItem.guid, "Finished", FDItemStatus.FinishedUploading);
 			}
 			
 			if(processing) {
 				//update the treeview with the currently uploading file
 				try {
-					updateTree(operationQueue.currentGuid, "Uploading");
+					updateTree(operationQueue.currentGuid, "Uploading", FDItemStatus.Uploading);
 				}
 				catch (Exception t) {
-					//do nothing, despite how bad of a practice that is
-					//TODO do better than nothing
+					System.Console.WriteLine(t.Message);
+					//TODO log message to gui error log
 				}
 			}
 			
@@ -306,9 +321,10 @@ public partial class FDQueueView : Gtk.Window
 		this.dequeueSelected();
 	}
 	
+	//sets the sensitivity of the remove button, depending on the selection state of the tree
 	protected void RemoveSensitive (object sender, System.EventArgs e)
 	{
-		Gtk.TreeSelection selection = treeview1.Selection;
+		Gtk.TreeSelection selection = sender as Gtk.TreeSelection;
 		Gtk.TreePath[] selectionPath = selection.GetSelectedRows();
 		
 		if(selectionPath.Length < 1) //nothing is selected
@@ -374,15 +390,50 @@ public partial class FDQueueView : Gtk.Window
 
 	protected void OnPreferencesActionActivated (object sender, System.EventArgs e)
 	{
+		//The preference window itself handles saving settings, so we just have to show it here.
 		FDPreferences preferences = new FDPreferences(this, DialogFlags.Modal, UserSettings);
-		
-		if((ResponseType)preferences.Run () == ResponseType.Ok) {
-			System.Console.WriteLine("Preferences would be saved");
-		}
-		else {
-			System.Console.WriteLine("Preferences would be discarded");
-		}
+		preferences.Run ();
 		preferences.Destroy();
+	}
+
+	protected void OnAboutActionActivated (object sender, System.EventArgs e)
+	{
+		Gtk.AboutDialog dialog = new AboutDialog();
+		
+		dialog.ProgramName = "snowpack";
+		dialog.Version = "0.1.0";
+		dialog.Comments = "A cross-platform Amazon Glacier Client";
+		dialog.Authors = new string [] {"Nathan Wittstock"};
+		dialog.Website = "http://fardogllc.com/";
+		
+		dialog.Run ();
+		dialog.Destroy ();
+	}
+
+	protected void OnSnowpackOnGithubActionActivated (object sender, System.EventArgs e)
+	{
+		string target = "https://github.com/fardog/snowpack";
+		
+		try
+		{
+			System.Diagnostics.Process.Start(target);
+		}
+		catch (Exception f)
+		{
+			Gtk.MessageDialog dialog = new Gtk.MessageDialog(this, 
+			                                                 DialogFlags.Modal, 
+			                                                 MessageType.Error, 
+			                                                 ButtonsType.Ok, 
+			                                                 "Couldn't launch default web browser. Error was: " + f.Message);
+			dialog.Run();
+			dialog.Destroy();
+		}
+	}
+
+	protected void OnArchiveBrowserActionActivated (object sender, System.EventArgs e)
+	{
+		FDArchiveBrowser browser = new FDArchiveBrowser(this.DataStore);
+		browser.Show ();
 	}
 }
 

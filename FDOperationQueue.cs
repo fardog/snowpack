@@ -238,6 +238,13 @@ namespace snowpack
 			
 			return this.paused;
 		}
+		
+		public int QueueSize()
+		{
+			int count = 0;
+			if(this.currentStatus == "upload") count++;
+			return this.queue.Count + count;
+		}
 	}
 }
 

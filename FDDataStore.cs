@@ -16,6 +16,7 @@
 using System;
 using System.Data;
 using System.IO;
+using System.Collections.Generic;
 using Mono.Data.Sqlite;
 
 namespace snowpack
@@ -150,6 +151,61 @@ namespace snowpack
 				DateTime.UtcNow.Ticks.ToString() + ");";
 			
 			return insertFile.ExecuteNonQuery();
+		}
+		
+		public List<FDArchiveDirectory> GetDirectories ( FDArchiveDirectory parentDir )
+		{
+			Int64 parent = parentDir.parent;
+			IDbCommand getDirectories = dbcon.CreateCommand();
+			List<FDArchiveDirectory> directories = new List<FDArchiveDirectory>();
+			
+			getDirectories.CommandText = 
+				"SELECT * from `directory` WHERE `directory_parent` = " + parent.ToString() + ";";
+			
+			IDataReader reader = getDirectories.ExecuteReader();
+			
+			while (reader.Read ())
+			{
+				FDArchiveDirectory directory = new FDArchiveDirectory(
+					reader.GetInt64 (0), //id
+					reader.GetString (1), //directoryname
+					reader.GetInt64 (2) //parent
+				);
+				
+				directories.Add(directory);
+			}
+			
+			return directories;
+		}
+		
+		//gets all items given a parent directory
+		public List<FDArchiveItem> GetItems ( FDArchiveDirectory parentDir )
+		{
+			Int64 parent = parentDir.parent;
+			IDbCommand getItems = dbcon.CreateCommand();
+			List<FDArchiveItem> items = new List<FDArchiveItem>();
+			
+			getItems.CommandText = 
+				"SELECT * from `file` WHERE `file_directory` = " + parent.ToString() + ";";
+			
+			IDataReader reader = getItems.ExecuteReader();
+			
+			while(reader.Read ())
+			{
+				FDArchiveItem item = new FDArchiveItem(
+					reader.GetInt64 (0), //id
+					reader.GetString (1), //filename
+					reader.GetString (2), //checksum
+					reader.GetString (5), //archive id
+					DateTime.FromFileTimeUtc(reader.GetInt64 (4)), //modified time
+					DateTime.FromFileTimeUtc(reader.GetInt64 (7)), //upload time
+					reader.GetInt64 (6) //parent
+				);
+				
+				items.Add(item);
+			}
+			
+			return items;		
 		}
 		
 		public int StoreQueue(FDQueueItem item) {

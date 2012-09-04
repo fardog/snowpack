@@ -61,11 +61,13 @@
     <Compile Include="FDUserSettings.cs" />
     <Compile Include="FDChecksum.cs" />
     <Compile Include="FDOperationQueue.cs" />
-    <Compile Include="FDQueueItem.cs" />
     <Compile Include="FDQueueView.cs" />
     <Compile Include="gtk-gui\FDQueueView.cs" />
     <Compile Include="FDPreferences.cs" />
     <Compile Include="gtk-gui\snowpack.FDPreferences.cs" />
+    <Compile Include="FDTypes.cs" />
+    <Compile Include="FDArchiveBrowser.cs" />
+    <Compile Include="gtk-gui\snowpack.FDArchiveBrowser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

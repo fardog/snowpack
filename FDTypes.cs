@@ -43,5 +43,53 @@ namespace snowpack
 			progress = e.PercentDone;
 		}
 	}
+	
+	public class FDArchiveItem
+	{
+		public Int64 id { get; set; }
+		public string filename { get; set; }
+		public string checksum { get; set; }
+		public string archiveID { get; set; }
+		public DateTime modified { get; set; }
+		public DateTime stored { get; set; }
+		public Int64 parent { get; set; }
+		public int versions { get; set; }
+		
+		public FDArchiveItem(Int64 i, string fn, string cs, string aid, DateTime mt, DateTime st, Int64 p, int v = 0)
+		{
+			id = i;
+			filename = fn;
+			checksum = cs;
+			archiveID = aid;
+			modified = mt;
+			stored = st;
+			parent = p;
+			versions = v;
+		}
+	}
+	
+	public class FDArchiveDirectory
+	{
+		public Int64 id { get; set; }
+		public string dirname { get; set; }
+		public Int64 parent { get; set; }
+		
+		public FDArchiveDirectory (Int64 i, string dn, Int64 p)
+		{
+			id = i;
+			dirname = dn;
+			parent = p;
+		}
+	}
+	
+	public struct FDItemStatus
+	{
+		public const int Queued = 0;
+		public const int Uploading = 1;
+		public const int FinishedUploading = 2;
+		public const int Downloading = 3;
+		public const int FinishedDownloading = 4;
+		public const int Error = -1;
+	}
 }
 
