@@ -197,8 +197,8 @@ namespace snowpack
 					reader.GetString (1), //filename
 					reader.GetString (2), //checksum
 					reader.GetString (5), //archive id
-					DateTime.FromFileTimeUtc(reader.GetInt64 (4)), //modified time
-					DateTime.FromFileTimeUtc(reader.GetInt64 (7)), //upload time
+					DateTime.FromBinary(reader.GetInt64 (4)), //modified time
+					DateTime.FromBinary(reader.GetInt64 (7)), //upload time
 					reader.GetInt64 (6) //parent
 				);
 				

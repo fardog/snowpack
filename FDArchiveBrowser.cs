@@ -15,8 +15,8 @@ namespace snowpack
 			DataStore = ds;
 			TreeModel = new Gtk.TreeStore(
 				typeof(string), //file or dirname, 0
-				typeof(DateTime), //time modified, 1
-				typeof(DateTime), //time uploaded, 2
+				typeof(string), //time modified, 1
+				typeof(string), //time uploaded, 2
 				typeof(int), //versions, 3
 				typeof(string), //checksum, 4
 				typeof(string), //archiveid, 5
@@ -48,6 +48,7 @@ namespace snowpack
 			treeview1.Model = this.TreeModel;
 			Gtk.TreeSelection selection = treeview1.Selection;
 			selection.Mode = Gtk.SelectionMode.Multiple;
+			treeview1.Selection.Changed += OnTreeview1RowSelected;
 			
 			//insert root node, and populate the first set of directories/files
 			TreeIter rootIter = TreeModel.AppendValues ("(root)");
@@ -74,14 +75,28 @@ namespace snowpack
 			{
 				TreeModel.AppendValues (parentIter,
 				                        item.filename,
-				                        item.modified,
-				                        item.stored,
+				                        item.modified.ToLocalTime().ToShortDateString() + " " + item.modified.ToLocalTime().ToShortTimeString(),
+				                        item.stored.ToLocalTime().ToShortDateString() + " " + item.stored.ToLocalTime().ToShortTimeString(),
 				                        0,
 				                        item.checksum,
 				                        item.archiveID,
 				                        item.id,
 				                        item.parent);
 			}
+			
+			RemoveLoadingItem(parentIter);
+		}
+		
+		//clear the "loading" item we use to force expansion caret
+		private void RemoveLoadingItem(Gtk.TreeIter parentIter)
+		{
+			TreeIter loadingNode;
+			
+			TreeModel.IterChildren(out loadingNode, parentIter);
+			if((string)TreeModel.GetValue (loadingNode, 0) == "(loading…)")
+				TreeModel.Remove (ref loadingNode);
+			
+			return;
 		}
 
 		protected void OnTreeview1RowExpanded (object o, Gtk.RowExpandedArgs args)
@@ -97,6 +112,23 @@ namespace snowpack
 			
 			this.LoadDirectories(args.Iter, parent);
 			this.LoadFiles(args.Iter, parent);
+		}
+		
+		//when we select a vault item, retrieve it's id (if it has one)
+		private void OnTreeview1RowSelected (object sender, System.EventArgs e) 
+		{
+			Gtk.TreeSelection selection = sender as Gtk.TreeSelection;
+			Gtk.TreePath[] selectionPath = selection.GetSelectedRows();
+			
+			if(selectionPath.Length < 1) return;
+			
+			foreach (Gtk.TreePath path in selectionPath)
+			{
+				TreeIter iter;
+				if(!selection.TreeView.Model.GetIter(out iter, path)) continue;
+				string archiveID = (string)selection.TreeView.Model.GetValue(iter, 5);
+				System.Console.WriteLine(archiveID);
+			}
 		}
 	}
 }

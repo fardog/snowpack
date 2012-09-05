@@ -12,33 +12,33 @@
     <action-group name="Default">
       <action id="QueueAction">
         <property name="Type">Action</property>
-        <property name="Label" translatable="yes">_Queue</property>
-        <property name="ShortLabel" translatable="yes">Queue</property>
+        <property name="Label" translatable="yes">Q_ueue</property>
+        <property name="ShortLabel" translatable="yes">Q_ueue</property>
       </action>
       <action id="AddFileAction">
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Primary&gt;o</property>
         <property name="Label" translatable="yes">Add _file…</property>
-        <property name="ShortLabel" translatable="yes">Add item…</property>
+        <property name="ShortLabel" translatable="yes">Add _file…</property>
         <signal name="Activated" handler="OnAddFileActionActivated" />
       </action>
       <action id="RemoveSelectedAction">
         <property name="Type">Action</property>
-        <property name="Label" translatable="yes">Remove Selected</property>
+        <property name="Label" translatable="yes">_Remove Selected</property>
         <property name="Sensitive">False</property>
-        <property name="ShortLabel" translatable="yes">Remove Selected</property>
+        <property name="ShortLabel" translatable="yes">_Remove Selected</property>
         <signal name="Activated" handler="OnRemoveSelectedActionActivated" />
       </action>
       <action id="MoveSelectedAction">
         <property name="Type">Action</property>
-        <property name="Label" translatable="yes">Move Selected</property>
+        <property name="Label" translatable="yes">_Move Selected</property>
         <property name="Sensitive">False</property>
-        <property name="ShortLabel" translatable="yes">Move Selected</property>
+        <property name="ShortLabel" translatable="yes">_Move Selected</property>
       </action>
       <action id="EditAction">
         <property name="Type">Action</property>
-        <property name="Label" translatable="yes">Edit</property>
-        <property name="ShortLabel" translatable="yes">Edit</property>
+        <property name="Label" translatable="yes">_Edit</property>
+        <property name="ShortLabel" translatable="yes">_Edit</property>
       </action>
       <action id="WindowAction">
         <property name="Type">Action</property>
@@ -49,26 +49,26 @@
       <action id="HelpAction">
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">_Help</property>
-        <property name="ShortLabel" translatable="yes">Help</property>
+        <property name="ShortLabel" translatable="yes">_Help</property>
       </action>
       <action id="QuitAction">
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Primary&gt;q</property>
         <property name="Label" translatable="yes">_Quit…</property>
-        <property name="ShortLabel" translatable="yes">Quit…</property>
+        <property name="ShortLabel" translatable="yes">_Quit…</property>
         <signal name="Activated" handler="OnQuitActionActivated" />
       </action>
       <action id="AboutAction">
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">_About…</property>
-        <property name="ShortLabel" translatable="yes">About</property>
+        <property name="ShortLabel" translatable="yes">_About…</property>
         <signal name="Activated" handler="OnAboutActionActivated" />
       </action>
       <action id="SelectAllAction">
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Primary&gt;a</property>
-        <property name="Label" translatable="yes">Select All</property>
-        <property name="ShortLabel" translatable="yes">Select All</property>
+        <property name="Label" translatable="yes">Select _All</property>
+        <property name="ShortLabel" translatable="yes">Select _All</property>
         <signal name="Activated" handler="OnSelectAllActionActivated" />
       </action>
       <action id="PreferencesAction">
@@ -81,7 +81,7 @@
       <action id="AddDirectoryAction">
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">Add _directory…</property>
-        <property name="ShortLabel" translatable="yes">Add directory…</property>
+        <property name="ShortLabel" translatable="yes">Add _directory…</property>
         <signal name="Activated" handler="OnAddDirectoryActionActivated" />
       </action>
       <action id="PauseQueueAction">
@@ -92,21 +92,20 @@
       </action>
       <action id="WindowAction1">
         <property name="Type">Action</property>
-        <property name="Label" translatable="yes">Window</property>
-        <property name="ShortLabel" translatable="yes">Window</property>
+        <property name="Label" translatable="yes">_Window</property>
+        <property name="ShortLabel" translatable="yes">_Window</property>
       </action>
       <action id="ArchiveBrowserAction">
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Primary&gt;b</property>
-        <property name="Label" translatable="yes">Archive Browser…</property>
-        <property name="Sensitive">False</property>
-        <property name="ShortLabel" translatable="yes">Archive Browser…</property>
+        <property name="Label" translatable="yes">_Archive Browser…</property>
+        <property name="ShortLabel" translatable="yes">_Archive Browser…</property>
         <signal name="Activated" handler="OnArchiveBrowserActionActivated" />
       </action>
       <action id="snowpackOnGithubAction">
         <property name="Type">Action</property>
-        <property name="Label" translatable="yes">snowpack on Github…</property>
-        <property name="ShortLabel" translatable="yes">snowpack on Github…</property>
+        <property name="Label" translatable="yes">snowpack on _Github…</property>
+        <property name="ShortLabel" translatable="yes">snowpack on _Github…</property>
         <signal name="Activated" handler="OnSnowpackOnGithubActionActivated" />
       </action>
     </action-group>
@@ -238,7 +237,6 @@
             <child>
               <widget class="Gtk.Button" id="buttonArchive">
                 <property name="MemberName" />
-                <property name="Sensitive">False</property>
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
                 <property name="Label" translatable="yes">_Archives…</property>
@@ -575,10 +573,41 @@ Asia Pacific (Tokyo)</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="snowpack.FDArchiveBrowser" design-size="564 379">
-    <action-group name="Default" />
+  <widget class="Gtk.Window" id="snowpack.FDArchiveBrowser" design-size="954 472">
+    <action-group name="Default">
+      <action id="VaultAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">_Vault</property>
+        <property name="Sensitive">False</property>
+        <property name="ShortLabel" translatable="yes">_Vault</property>
+      </action>
+      <action id="EditAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">_Edit</property>
+        <property name="Sensitive">False</property>
+        <property name="ShortLabel" translatable="yes">_Edit</property>
+      </action>
+      <action id="SelectAllAction">
+        <property name="Type">Action</property>
+        <property name="Accelerator">&lt;Primary&gt;a</property>
+        <property name="Label" translatable="yes">Select _All</property>
+        <property name="ShortLabel" translatable="yes">Select _All</property>
+      </action>
+      <action id="CloseAction">
+        <property name="Type">Action</property>
+        <property name="Accelerator">&lt;Primary&gt;w</property>
+        <property name="Label" translatable="yes">_Close</property>
+        <property name="ShortLabel" translatable="yes">_Close</property>
+      </action>
+      <action id="HelpAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">_Help</property>
+        <property name="Sensitive">False</property>
+        <property name="ShortLabel" translatable="yes">_Help</property>
+      </action>
+    </action-group>
     <property name="MemberName" />
-    <property name="Title" translatable="yes">Archive Browser</property>
+    <property name="Title" translatable="yes">Browser - snowpack</property>
     <property name="WindowPosition">CenterOnParent</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
@@ -587,7 +616,15 @@ Asia Pacific (Tokyo)</property>
         <child>
           <widget class="Gtk.MenuBar" id="menubar1">
             <property name="MemberName" />
-            <node name="__gtksharp_57_Stetic_Editor_ActionMenuBar" type="Menubar" />
+            <node name="menubar1" type="Menubar">
+              <node type="Menu" action="VaultAction">
+                <node type="Menuitem" action="CloseAction" />
+              </node>
+              <node type="Menu" action="EditAction">
+                <node type="Menuitem" action="SelectAllAction" />
+              </node>
+              <node type="Menu" action="HelpAction" />
+            </node>
           </widget>
           <packing>
             <property name="Position">0</property>
@@ -619,11 +656,12 @@ Asia Pacific (Tokyo)</property>
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.Button" id="button29">
+              <widget class="Gtk.Button" id="buttonRestore">
                 <property name="MemberName" />
+                <property name="Sensitive">False</property>
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
-                <property name="Label" translatable="yes">GtkButton</property>
+                <property name="Label" translatable="yes">_Restore</property>
                 <property name="UseUnderline">True</property>
               </widget>
               <packing>

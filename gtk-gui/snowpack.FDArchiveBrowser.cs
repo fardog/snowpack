@@ -5,12 +5,17 @@ namespace snowpack
 	public partial class FDArchiveBrowser
 	{
 		private global::Gtk.UIManager UIManager;
+		private global::Gtk.Action VaultAction;
+		private global::Gtk.Action EditAction;
+		private global::Gtk.Action SelectAllAction;
+		private global::Gtk.Action CloseAction;
+		private global::Gtk.Action HelpAction;
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.MenuBar menubar1;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView treeview1;
 		private global::Gtk.HBox hbox1;
-		private global::Gtk.Button button29;
+		private global::Gtk.Button buttonRestore;
 		private global::Gtk.Statusbar statusbar1;
 		
 		protected virtual void Build ()
@@ -19,17 +24,35 @@ namespace snowpack
 			// Widget snowpack.FDArchiveBrowser
 			this.UIManager = new global::Gtk.UIManager ();
 			global::Gtk.ActionGroup w1 = new global::Gtk.ActionGroup ("Default");
+			this.VaultAction = new global::Gtk.Action ("VaultAction", global::Mono.Unix.Catalog.GetString ("_Vault"), null, null);
+			this.VaultAction.Sensitive = false;
+			this.VaultAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Vault");
+			w1.Add (this.VaultAction, null);
+			this.EditAction = new global::Gtk.Action ("EditAction", global::Mono.Unix.Catalog.GetString ("_Edit"), null, null);
+			this.EditAction.Sensitive = false;
+			this.EditAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Edit");
+			w1.Add (this.EditAction, null);
+			this.SelectAllAction = new global::Gtk.Action ("SelectAllAction", global::Mono.Unix.Catalog.GetString ("Select _All"), null, null);
+			this.SelectAllAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Select _All");
+			w1.Add (this.SelectAllAction, "<Primary>a");
+			this.CloseAction = new global::Gtk.Action ("CloseAction", global::Mono.Unix.Catalog.GetString ("_Close"), null, null);
+			this.CloseAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Close");
+			w1.Add (this.CloseAction, "<Primary>w");
+			this.HelpAction = new global::Gtk.Action ("HelpAction", global::Mono.Unix.Catalog.GetString ("_Help"), null, null);
+			this.HelpAction.Sensitive = false;
+			this.HelpAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Help");
+			w1.Add (this.HelpAction, null);
 			this.UIManager.InsertActionGroup (w1, 0);
 			this.AddAccelGroup (this.UIManager.AccelGroup);
 			this.Name = "snowpack.FDArchiveBrowser";
-			this.Title = global::Mono.Unix.Catalog.GetString ("Archive Browser");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Browser - snowpack");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Container child snowpack.FDArchiveBrowser.Gtk.Container+ContainerChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
 			this.vbox2.Spacing = 6;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'/></ui>");
+			this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='VaultAction' action='VaultAction'><menuitem name='CloseAction' action='CloseAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='SelectAllAction' action='SelectAllAction'/></menu><menu name='HelpAction' action='HelpAction'/></menubar></ui>");
 			this.menubar1 = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/menubar1")));
 			this.menubar1.Name = "menubar1";
 			this.vbox2.Add (this.menubar1);
@@ -54,13 +77,14 @@ namespace snowpack
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.button29 = new global::Gtk.Button ();
-			this.button29.CanFocus = true;
-			this.button29.Name = "button29";
-			this.button29.UseUnderline = true;
-			this.button29.Label = global::Mono.Unix.Catalog.GetString ("GtkButton");
-			this.hbox1.Add (this.button29);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.button29]));
+			this.buttonRestore = new global::Gtk.Button ();
+			this.buttonRestore.Sensitive = false;
+			this.buttonRestore.CanFocus = true;
+			this.buttonRestore.Name = "buttonRestore";
+			this.buttonRestore.UseUnderline = true;
+			this.buttonRestore.Label = global::Mono.Unix.Catalog.GetString ("_Restore");
+			this.hbox1.Add (this.buttonRestore);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonRestore]));
 			w5.Position = 0;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -82,8 +106,8 @@ namespace snowpack
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 564;
-			this.DefaultHeight = 379;
+			this.DefaultWidth = 954;
+			this.DefaultHeight = 472;
 			this.Show ();
 			this.treeview1.RowExpanded += new global::Gtk.RowExpandedHandler (this.OnTreeview1RowExpanded);
 		}

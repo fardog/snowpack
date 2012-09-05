@@ -313,7 +313,8 @@ public partial class FDQueueView : Gtk.Window
 	
 	protected void ArchiveDialog (object sender, System.EventArgs e)
 	{
-		return;
+		FDArchiveBrowser browser = new FDArchiveBrowser(this.DataStore);
+		browser.Show ();
 	}
 	
 	protected void RemoveItem (object sender, System.EventArgs e)
@@ -432,8 +433,7 @@ public partial class FDQueueView : Gtk.Window
 
 	protected void OnArchiveBrowserActionActivated (object sender, System.EventArgs e)
 	{
-		FDArchiveBrowser browser = new FDArchiveBrowser(this.DataStore);
-		browser.Show ();
+		ArchiveDialog(sender, e);
 	}
 }
 
