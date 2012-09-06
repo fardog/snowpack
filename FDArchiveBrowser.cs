@@ -127,8 +127,13 @@ namespace snowpack
 				TreeIter iter;
 				if(!selection.TreeView.Model.GetIter(out iter, path)) continue;
 				string archiveID = (string)selection.TreeView.Model.GetValue(iter, 5);
-				System.Console.WriteLine(archiveID);
+				if(!String.IsNullOrWhiteSpace(archiveID)) System.Console.WriteLine(archiveID);
 			}
+		}
+
+		protected void OnCloseActionActivated (object sender, System.EventArgs e)
+		{
+			this.Destroy ();
 		}
 	}
 }

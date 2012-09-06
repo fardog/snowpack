@@ -77,7 +77,7 @@ public partial class FDQueueView
 		w1.Add (this.PreferencesAction, "<Primary>comma");
 		this.AddDirectoryAction = new global::Gtk.Action ("AddDirectoryAction", global::Mono.Unix.Catalog.GetString ("Add _directory…"), null, null);
 		this.AddDirectoryAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Add _directory…");
-		w1.Add (this.AddDirectoryAction, null);
+		w1.Add (this.AddDirectoryAction, "<Primary><Alt>o");
 		this.PauseQueueAction = new global::Gtk.Action ("PauseQueueAction", global::Mono.Unix.Catalog.GetString ("Pa_use queue"), null, null);
 		this.PauseQueueAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Pa_use queue");
 		w1.Add (this.PauseQueueAction, "<Primary><Alt>p");

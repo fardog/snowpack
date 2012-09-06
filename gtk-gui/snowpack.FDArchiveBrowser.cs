@@ -25,7 +25,6 @@ namespace snowpack
 			this.UIManager = new global::Gtk.UIManager ();
 			global::Gtk.ActionGroup w1 = new global::Gtk.ActionGroup ("Default");
 			this.VaultAction = new global::Gtk.Action ("VaultAction", global::Mono.Unix.Catalog.GetString ("_Vault"), null, null);
-			this.VaultAction.Sensitive = false;
 			this.VaultAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Vault");
 			w1.Add (this.VaultAction, null);
 			this.EditAction = new global::Gtk.Action ("EditAction", global::Mono.Unix.Catalog.GetString ("_Edit"), null, null);
@@ -109,6 +108,7 @@ namespace snowpack
 			this.DefaultWidth = 954;
 			this.DefaultHeight = 472;
 			this.Show ();
+			this.CloseAction.Activated += new global::System.EventHandler (this.OnCloseActionActivated);
 			this.treeview1.RowExpanded += new global::Gtk.RowExpandedHandler (this.OnTreeview1RowExpanded);
 		}
 	}

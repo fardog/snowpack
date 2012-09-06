@@ -140,6 +140,7 @@ namespace snowpack
 		public void ProcessFile(string fileName)
 		{
 			FileAttributes attr = File.GetAttributes(fileName);
+			//TODO handle non-file items (like devices)
 			if ((attr & FileAttributes.Directory) == FileAttributes.Directory) { //we're on a directory, process it recursively
 				foreach ( string f in Directory.GetFiles(fileName) ) //handle files first
 					this.ProcessFile (f);
@@ -170,6 +171,7 @@ namespace snowpack
 				fileChecksum.CalculateChecksum();
 			}
 			catch (Exception e) {
+				//TODO make sure we log checksum failures
 				System.Console.WriteLine("Couldn't checksum " + fileName);
 				return;
 			}

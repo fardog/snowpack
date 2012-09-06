@@ -80,6 +80,7 @@
       </action>
       <action id="AddDirectoryAction">
         <property name="Type">Action</property>
+        <property name="Accelerator">&lt;Primary&gt;&lt;Alt&gt;o</property>
         <property name="Label" translatable="yes">Add _directory…</property>
         <property name="ShortLabel" translatable="yes">Add _directory…</property>
         <signal name="Activated" handler="OnAddDirectoryActionActivated" />
@@ -578,7 +579,6 @@ Asia Pacific (Tokyo)</property>
       <action id="VaultAction">
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">_Vault</property>
-        <property name="Sensitive">False</property>
         <property name="ShortLabel" translatable="yes">_Vault</property>
       </action>
       <action id="EditAction">
@@ -598,6 +598,7 @@ Asia Pacific (Tokyo)</property>
         <property name="Accelerator">&lt;Primary&gt;w</property>
         <property name="Label" translatable="yes">_Close</property>
         <property name="ShortLabel" translatable="yes">_Close</property>
+        <signal name="Activated" handler="OnCloseActionActivated" />
       </action>
       <action id="HelpAction">
         <property name="Type">Action</property>
