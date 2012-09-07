@@ -91,5 +91,14 @@ namespace snowpack
 		public const int FinishedDownloading = 4;
 		public const int Error = -1;
 	}
+	
+	public struct FDLogVerbosity
+	{
+		public const int Silent = 0;
+		public const int Error = 1;
+		public const int Warning = 2;
+		public const int Information = 3;
+		public const int Debug = 4;
+	}
 }
 

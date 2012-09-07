@@ -36,8 +36,9 @@ namespace snowpack
 		private FDDataStore DataStore;
 		private FDUserSettings settings;
 		public Queue<FDQueueItem> finished;
+		private FDOperationLog log;
 		
-		public FDOperationQueue (FDDataStore store, FDUserSettings userset)
+		public FDOperationQueue (FDDataStore store, FDUserSettings userset, FDOperationLog oplog)
 		{
 			queue = new List<FDQueueItem>();
 			finished = new Queue<FDQueueItem>();
@@ -46,6 +47,7 @@ namespace snowpack
 			settings = userset;
 			currentStatus = "idle";
 			currentItem = null;
+			log = oplog;
 		}
 		
 		public int Add(FDQueueItem item)
@@ -191,7 +193,7 @@ namespace snowpack
 			
 			//Upload the file
 			currentStatus = "upload";
-			FDGlacier glacier = new FDGlacier(settings);
+			FDGlacier glacier = new FDGlacier(settings, log);
 			glacier.archiveDescription = System.IO.Path.GetFileName (currentItem.path);
 			glacier.setCallback(currentItem._updateProgress);
 			try {

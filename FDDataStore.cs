@@ -26,10 +26,12 @@ namespace snowpack
 		private string DataStoreURI;
 		private IDbConnection dbcon;
 		public bool ready = false;
+		private int verbosity;
 		
-		public FDDataStore (string DataStore)
+		public FDDataStore (string DataStore, int logVerbosity)
 		{
 			DataStoreURI = DataStore;
+			verbosity = logVerbosity;
 			if(!File.Exists (DataStoreURI)) //if the file doesn't exist yet 
 			{
 				if(!File.Exists(Path.GetDirectoryName(DataStoreURI))) //if the directory doesn't exist
@@ -88,7 +90,14 @@ namespace snowpack
 				"queue_path VARCHAR(1024)," +
 				"queue_guid CHAR(36)," +
 				"queue_type VARCHAR(10)," +
-				"queue_enqueued INTEGER );";
+				"queue_enqueued INTEGER );" +
+				"CREATE TABLE IF NOT EXISTS log ( " +
+				"log_id INTEGER PRIMARY KEY," +
+				"log_importance INTEGER," +
+				"log_component VARCHAR(32)," +
+				"log_short TEXT," +
+				"log_long TEXT," +
+				"log_timestamp INTEGER );";
 			
 			int retvalue = 0;
 			
@@ -210,6 +219,22 @@ namespace snowpack
 		
 		public int StoreQueue(FDQueueItem item) {
 			return 0;
+		}
+		
+		//stores a message to the log table
+		public int StoreLogMessage(int importance, string component, string smessage, string lmessage, DateTime timestamp)
+		{
+			IDbCommand logInsert = dbcon.CreateCommand();
+			
+			logInsert.CommandText = 
+				"INSERT INTO log VALUES (NULL," +
+				importance.ToString() + "," +
+				"\"" + component + "\"," +
+				"\"" + smessage + "\"," +
+				"\"" + lmessage + "\"," +
+				timestamp.ToBinary().ToString() + ");";
+			
+			return logInsert.ExecuteNonQuery();
 		}
 		
 		private Int64 insertDirectoryTree(string[] directories)

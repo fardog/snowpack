@@ -26,6 +26,7 @@ using snowpack;
 public partial class FDQueueView : Gtk.Window
 {
 	private FDOperationQueue operationQueue;
+	private FDOperationLog log;
 	private BackgroundWorker queueWorker;
 	private FDUserSettings UserSettings;
 	private FDDataStore DataStore;
@@ -58,8 +59,9 @@ public partial class FDQueueView : Gtk.Window
 	{
 		Build ();
 		UserSettings = new FDUserSettings();
-		DataStore = new FDDataStore(UserSettings.CurrentDataStore);
-		operationQueue = new FDOperationQueue(DataStore, UserSettings);
+		DataStore = new FDDataStore(UserSettings.CurrentDataStore, FDLogVerbosity.Warning);
+		log = new FDOperationLog(DataStore, FDLogVerbosity.Warning, true);
+		operationQueue = new FDOperationQueue(DataStore, UserSettings, log);
 		treeview1.Selection.Changed += RemoveSensitive;
 		
 		//Create the item list
@@ -123,6 +125,7 @@ public partial class FDQueueView : Gtk.Window
 	{
 		//If our queue is empty, just quit
 		if(operationQueue.QueueSize() == 0) {
+			log.Store(this.ToString(), "Shutdown: Queue is empty", null, FDLogVerbosity.Information);
 			Application.Quit ();
 			a.RetVal = false;
 			return;
@@ -138,6 +141,7 @@ public partial class FDQueueView : Gtk.Window
 		if((ResponseType)reallyQuit.Run () == ResponseType.Yes) {
 			reallyQuit.Destroy();
 			operationQueue.StopQueue();
+			log.Store (this.ToString(), "Shutdown: Queue has items", null, FDLogVerbosity.Information);
 			Thread.Sleep (1000); //wait for queue shutdown
 			a.RetVal = false;
 			Application.Quit ();
@@ -184,7 +188,8 @@ public partial class FDQueueView : Gtk.Window
 			else { //we couldn't find it, set an error
 				uploadQueue.SetValue (iter, 1, "Not in Queue"); 
 				uploadQueue.SetValue (iter, 3, FDItemStatus.Error);
-				//TODO Log error if the queue messes up
+				log.Store (this.ToString(), "Item not in queue", "An item that was dequeued was missing from the GUI. " +
+					"You should check your archive to ensure everything was uploaded as expected.", FDLogVerbosity.Error);
 			}
 		}
 	}
@@ -264,7 +269,7 @@ public partial class FDQueueView : Gtk.Window
 				}
 				catch (Exception t) {
 					System.Console.WriteLine(t.Message);
-					//TODO log message to gui error log
+					log.Store(this.ToString(), "Error updating GUI", t.Message, FDLogVerbosity.Warning);
 				}
 			}
 			

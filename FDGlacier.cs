@@ -37,10 +37,12 @@ namespace snowpack
 		public string vaultName { get; set; }
 		public string archiveDescription { get; set; }
 		public int progress { get; set; }
+		private FDOperationLog log;
 
-		public FDGlacier (FDUserSettings settings)
+		public FDGlacier (FDUserSettings settings, FDOperationLog oplog)
 		{
 			this.vaultName = settings.AWSGlacierVaultName;
+			log = oplog;
 
 			switch (settings.AWSRegion) {
 			case FDUserSettings.AWSRegionIndex.USWest1:
@@ -86,8 +88,7 @@ namespace snowpack
 			}
 			catch(Exception e)
 			{
-				System.Console.WriteLine("Error uploading file: " + e.Message);
-				System.Console.WriteLine("…on file: " + filePath);
+				log.Store(this.ToString(), "Error uploading file: " + filePath, e.Message, FDLogVerbosity.Error);
 				throw e;
 			}
 		}
