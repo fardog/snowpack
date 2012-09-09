@@ -27,6 +27,8 @@ namespace snowpack
 		public FileAttributes kind { get; set; }
 		public string checksum { get; set; }
 		public Guid guid { get; set; }
+		public int status { get; set; }
+		public FDGlacier glacier { get; set; }
 		
 		public FDQueueItem (string filePath, FileAttributes fileType)
 		{

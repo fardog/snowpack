@@ -21,6 +21,7 @@ using System.IO;
 using System.Net;
 
 using Amazon;
+using Amazon.Runtime;
 using Amazon.Glacier;
 using Amazon.Glacier.Model;
 using Amazon.Glacier.Transfer;
@@ -30,16 +31,21 @@ namespace snowpack
 {
 	public class FDGlacier
 	{
+		private AmazonGlacierConfig glacierConfig;
+		private AWSCredentials awsCredentials;
 		private ArchiveTransferManager transferManager;
 		private RegionEndpoint region;
 		private UploadResult result;
-		private UploadOptions options;
+		private UploadOptions upOptions;
+		private DownloadOptions downOptions;
+		private string OperationType;
+		public string archiveID { get; set; }
 		public string vaultName { get; set; }
 		public string archiveDescription { get; set; }
 		public int progress { get; set; }
 		private FDOperationLog log;
 
-		public FDGlacier (FDUserSettings settings, FDOperationLog oplog)
+		public FDGlacier (FDUserSettings settings, FDOperationLog oplog, string optype)
 		{
 			this.vaultName = settings.AWSGlacierVaultName;
 			log = oplog;
@@ -64,27 +70,53 @@ namespace snowpack
 				region = RegionEndpoint.USEast1;
 				break;
 			}
+			
+			//Instantiate the glacier config with our settins (for future move to AmazonGlacierClient)
+			glacierConfig = new AmazonGlacierConfig();
+			glacierConfig.RegionEndpoint = region;
+			
+			//Instantiate AWS Credentials
+			awsCredentials = new BasicAWSCredentials(settings.AWSAccessKey, settings.AWSSecretKey);
 
 			//Instantiate the transfer manager with our settings
 			//TODO: Switch to glacier client so we can abort this damn thing
 			//glacierClient = new AmazonGlacierClient(appConfig["AWSAccessKey"], appConfig["AWSSecretKey"], region);
-			transferManager = new ArchiveTransferManager(settings.AWSAccessKey, settings.AWSSecretKey, region);
+			transferManager = new ArchiveTransferManager(awsCredentials, region);
 			
-			options = new UploadOptions();
+			upOptions = new UploadOptions();
+			downOptions = new DownloadOptions();
 			progress = 0;
-			options.StreamTransferProgress = this.onProgress;
+			upOptions.StreamTransferProgress = downOptions.StreamTransferProgress = this.onProgress;
+			
+			OperationType = optype;
 		}
 		
 		public void setCallback(System.EventHandler<Amazon.Runtime.StreamTransferProgressArgs> handler)
 		{
-			options.StreamTransferProgress = handler;
+			upOptions.StreamTransferProgress = handler;
+			downOptions.StreamTransferProgress = handler;
+		}
+		
+		public string getOperationType()
+		{
+			return OperationType;
+		}
+		
+		public ListJobsResult ListJobs()
+		{
+			AmazonGlacierClient client = new AmazonGlacierClient(awsCredentials, glacierConfig);
+			ListJobsRequest request = new ListJobsRequest().WithVaultName(vaultName);
+			ListJobsResponse response = client.ListJobs(request);
+			System.Console.WriteLine(response.ListJobsResult.JobList.Count);
+			
+			return response.ListJobsResult;
 		}
 		
 		public void uploadFile(string filePath)
 		{
 			try
 			{
-				result = transferManager.Upload (this.vaultName, this.archiveDescription, filePath, this.options);
+				result = transferManager.Upload (this.vaultName, this.archiveDescription, filePath, this.upOptions);
 			}
 			catch(Exception e)
 			{
@@ -93,9 +125,25 @@ namespace snowpack
 			}
 		}
 		
-		public void cancelUpload()
+		public void cancelOperation()
 		{
-			transferManager.Dispose();
+			//nothing yet
+		}
+		
+		public void RequestArchive(string savePath)
+		{
+			try {
+				transferManager.Download(vaultName, archiveID, savePath, downOptions);
+			}
+			catch (Exception e) {
+				log.Store(this.ToString(), "Error downloading file: " + archiveID, e.Message, FDLogVerbosity.Error);
+				throw e;
+			}
+		}
+		
+		public void DeleteArchive(string archiveID)
+		{
+			transferManager.DeleteArchive(vaultName, archiveID);
 		}
 		
 		public UploadResult getResult()

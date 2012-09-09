@@ -21,18 +21,23 @@ namespace snowpack
 	public partial class FDPreferences : Gtk.Dialog
 	{
 		FDUserSettings settings;
+		bool isFirstRun;
+		bool allowExit;
 		
 		public FDPreferences (Gtk.Window win, Gtk.DialogFlags f, FDUserSettings userset, bool firstRun = false) 
 			: base ("Preferences", win, f)
 		{
 			this.Build ();
 			settings = userset;
+			isFirstRun = firstRun;
+			allowExit = false;
 			
 			//fill the settings fields
 			entryAWSAccessKey.Text = settings.AWSAccessKey;
 			entryAWSSecretKey.Text = settings.AWSSecretKey;
 			entryAWSGlacierVaultName.Text = settings.AWSGlacierVaultName;
 			comboboxAWSRegion.Active = settings.AWSRegion;
+			this.DeleteEvent += OnDeleteEvent;
 			
 			//you can't cancel if this is firstrun
 			if(firstRun) buttonCancel.Sensitive = false;
@@ -70,11 +75,30 @@ namespace snowpack
 				settings.AWSGlacierVaultName = entryAWSGlacierVaultName.Text;
 				settings.AWSRegion = comboboxAWSRegion.Active;
 				settings.SaveSettings();
+				allowExit = true;
 				this.Respond(ResponseType.Ok);
 			}
 			else {
 				labelError.Text = "You must fill all required fields.";
 			}
+		}
+		
+		protected void OnDeleteEvent(object sender, DeleteEventArgs e)
+		{
+			if(this.isFirstRun)
+			{
+				if(allowExit)
+				{
+					e.RetVal = false;
+					return;
+				}
+				e.RetVal = true;
+				return;
+			}
+			
+			e.RetVal = false;
+			return;
+				
 		}
 
 		protected void OnButtonOkClicked (object sender, System.EventArgs e)

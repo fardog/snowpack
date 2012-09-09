@@ -114,7 +114,7 @@ namespace snowpack
 			this.LoadFiles(args.Iter, parent);
 		}
 		
-		//when we select a vault item, retrieve it's id (if it has one)
+		//when we select a vault item, retrieve its id (if it has one)
 		private void OnTreeview1RowSelected (object sender, System.EventArgs e) 
 		{
 			Gtk.TreeSelection selection = sender as Gtk.TreeSelection;

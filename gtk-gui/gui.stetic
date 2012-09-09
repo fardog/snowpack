@@ -109,6 +109,12 @@
         <property name="ShortLabel" translatable="yes">snowpack on _Github…</property>
         <signal name="Activated" handler="OnSnowpackOnGithubActionActivated" />
       </action>
+      <action id="RetrieveJobListAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Retrieve Job List</property>
+        <property name="ShortLabel" translatable="yes">Retrieve Job List</property>
+        <signal name="Activated" handler="OnRetrieveJobListActionActivated" />
+      </action>
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">Queue - snowpack</property>
@@ -125,6 +131,7 @@
                 <node type="Menuitem" action="AddFileAction" />
                 <node type="Menuitem" action="AddDirectoryAction" />
                 <node type="Separator" />
+                <node type="Menuitem" action="RetrieveJobListAction" />
                 <node type="Menuitem" action="MoveSelectedAction" />
                 <node type="Menuitem" action="RemoveSelectedAction" />
                 <node type="Separator" />
@@ -288,7 +295,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="snowpack.FDPreferences" design-size="636 279">
+  <widget class="Gtk.Dialog" id="snowpack.FDPreferences" design-size="636 259">
     <property name="MemberName" />
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -298,23 +305,10 @@
         <property name="MemberName" />
         <property name="BorderWidth">8</property>
         <child>
-          <widget class="Gtk.Fixed" id="fixed1">
-            <property name="MemberName" />
-            <property name="HeightRequest">15</property>
-            <property name="HasWindow">False</property>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
           <widget class="Gtk.Notebook" id="notebook1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="CurrentPage">0</property>
+            <property name="CurrentPage">1</property>
             <child>
               <widget class="Gtk.Table" id="table1">
                 <property name="MemberName" />
@@ -506,12 +500,58 @@ Asia Pacific (Tokyo)</property>
                 <property name="type">tab</property>
               </packing>
             </child>
+            <child>
+              <widget class="Gtk.Table" id="table2">
+                <property name="MemberName" />
+                <property name="NRows">3</property>
+                <property name="NColumns">3</property>
+                <property name="RowSpacing">6</property>
+                <property name="ColumnSpacing">6</property>
+                <child>
+                  <placeholder />
+                </child>
+                <child>
+                  <placeholder />
+                </child>
+                <child>
+                  <placeholder />
+                </child>
+                <child>
+                  <placeholder />
+                </child>
+                <child>
+                  <placeholder />
+                </child>
+                <child>
+                  <placeholder />
+                </child>
+                <child>
+                  <placeholder />
+                </child>
+                <child>
+                  <placeholder />
+                </child>
+                <child>
+                  <placeholder />
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="labelGeneral">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">General</property>
+              </widget>
+              <packing>
+                <property name="type">tab</property>
+              </packing>
+            </child>
           </widget>
           <packing>
-            <property name="Position">1</property>
+            <property name="Position">0</property>
             <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
             <property name="Padding">2</property>
           </packing>
         </child>
@@ -521,7 +561,7 @@ Asia Pacific (Tokyo)</property>
             <property name="Xalign">1</property>
           </widget>
           <packing>
-            <property name="Position">2</property>
+            <property name="Position">1</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>

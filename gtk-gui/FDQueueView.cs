@@ -20,6 +20,7 @@ public partial class FDQueueView
 	private global::Gtk.Action WindowAction1;
 	private global::Gtk.Action ArchiveBrowserAction;
 	private global::Gtk.Action snowpackOnGithubAction;
+	private global::Gtk.Action RetrieveJobListAction;
 	private global::Gtk.VBox vbox1;
 	private global::Gtk.MenuBar menubar1;
 	private global::Gtk.ScrolledWindow GtkScrolledWindow;
@@ -90,6 +91,9 @@ public partial class FDQueueView
 		this.snowpackOnGithubAction = new global::Gtk.Action ("snowpackOnGithubAction", global::Mono.Unix.Catalog.GetString ("snowpack on _Github…"), null, null);
 		this.snowpackOnGithubAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("snowpack on _Github…");
 		w1.Add (this.snowpackOnGithubAction, null);
+		this.RetrieveJobListAction = new global::Gtk.Action ("RetrieveJobListAction", global::Mono.Unix.Catalog.GetString ("Retrieve Job List"), null, null);
+		this.RetrieveJobListAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Retrieve Job List");
+		w1.Add (this.RetrieveJobListAction, null);
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "FDQueueView";
@@ -100,7 +104,7 @@ public partial class FDQueueView
 		this.vbox1.Name = "vbox1";
 		this.vbox1.Spacing = 6;
 		// Container child vbox1.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='QueueAction' action='QueueAction'><menuitem name='AddFileAction' action='AddFileAction'/><menuitem name='AddDirectoryAction' action='AddDirectoryAction'/><separator/><menuitem name='MoveSelectedAction' action='MoveSelectedAction'/><menuitem name='RemoveSelectedAction' action='RemoveSelectedAction'/><separator/><menuitem name='QuitAction' action='QuitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='SelectAllAction' action='SelectAllAction'/><separator/><menuitem name='PreferencesAction' action='PreferencesAction'/></menu><menu name='WindowAction1' action='WindowAction1'><menuitem name='ArchiveBrowserAction' action='ArchiveBrowserAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='snowpackOnGithubAction' action='snowpackOnGithubAction'/><separator/><menuitem name='AboutAction' action='AboutAction'/></menu></menubar></ui>");
+		this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='QueueAction' action='QueueAction'><menuitem name='AddFileAction' action='AddFileAction'/><menuitem name='AddDirectoryAction' action='AddDirectoryAction'/><separator/><menuitem name='RetrieveJobListAction' action='RetrieveJobListAction'/><menuitem name='MoveSelectedAction' action='MoveSelectedAction'/><menuitem name='RemoveSelectedAction' action='RemoveSelectedAction'/><separator/><menuitem name='QuitAction' action='QuitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='SelectAllAction' action='SelectAllAction'/><separator/><menuitem name='PreferencesAction' action='PreferencesAction'/></menu><menu name='WindowAction1' action='WindowAction1'><menuitem name='ArchiveBrowserAction' action='ArchiveBrowserAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='snowpackOnGithubAction' action='snowpackOnGithubAction'/><separator/><menuitem name='AboutAction' action='AboutAction'/></menu></menubar></ui>");
 		this.menubar1 = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/menubar1")));
 		this.menubar1.Name = "menubar1";
 		this.vbox1.Add (this.menubar1);
@@ -220,6 +224,7 @@ public partial class FDQueueView
 		this.AddDirectoryAction.Activated += new global::System.EventHandler (this.OnAddDirectoryActionActivated);
 		this.ArchiveBrowserAction.Activated += new global::System.EventHandler (this.OnArchiveBrowserActionActivated);
 		this.snowpackOnGithubAction.Activated += new global::System.EventHandler (this.OnSnowpackOnGithubActionActivated);
+		this.RetrieveJobListAction.Activated += new global::System.EventHandler (this.OnRetrieveJobListActionActivated);
 		this.buttonAddFile.Clicked += new global::System.EventHandler (this.OnButtonAddFileClicked);
 		this.buttonAddDir.Clicked += new global::System.EventHandler (this.OnButtonAddDirClicked);
 		this.buttonRemove.Clicked += new global::System.EventHandler (this.OnButtonRemoveClicked);

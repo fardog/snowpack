@@ -440,5 +440,16 @@ public partial class FDQueueView : Gtk.Window
 	{
 		ArchiveDialog(sender, e);
 	}
+
+	protected void OnRetrieveJobListActionActivated (object sender, System.EventArgs e)
+	{
+		FDGlacier glacier = new FDGlacier(UserSettings, log, "listjobs");
+		Amazon.Glacier.Model.ListJobsResult jobs = glacier.ListJobs();
+		
+		foreach (Amazon.Glacier.Model.GlacierJobDescription description in jobs.JobList)
+		{
+			Console.WriteLine("ID: " + description.JobId + ", " + description.StatusMessage);
+		}
+	}
 }
 

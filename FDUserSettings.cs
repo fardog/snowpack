@@ -41,11 +41,14 @@ namespace snowpack
 		public string AWSSecretKey { get; set; }
 		public int AWSRegion { get; set; }
 		public string AWSGlacierVaultName { get; set; }
+		public string AWSSQSQueueURL { get; set; }
+		public bool RestoresEnabled { get; set; }
 		
 		public FDUserSettings ()
 		{
 			localConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal);
 			settings = localConfig.AppSettings.Settings;
+			RestoresEnabled = false;
 			
 			if(settings["DataStoreFile"] != null)
 				DataStoreFile = settings["DataStoreFile"].Value;

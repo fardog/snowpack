@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.IO;
 
@@ -193,7 +194,7 @@ namespace snowpack
 			
 			//Upload the file
 			currentStatus = "upload";
-			FDGlacier glacier = new FDGlacier(settings, log);
+			FDGlacier glacier = new FDGlacier(settings, log, "upload");
 			glacier.archiveDescription = System.IO.Path.GetFileName (currentItem.path);
 			glacier.setCallback(currentItem._updateProgress);
 			try {
