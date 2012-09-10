@@ -35,7 +35,7 @@ namespace snowpack
 		private AWSCredentials awsCredentials;
 		private ArchiveTransferManager transferManager;
 		private RegionEndpoint region;
-		private UploadResult result;
+		public UploadResult result { get; set; }
 		private UploadOptions upOptions;
 		private DownloadOptions downOptions;
 		private string OperationType;

@@ -17,7 +17,7 @@ namespace snowpack
 		
 		public void Store (string component, string shortMessage, string fullMessage, int importance)
 		{
-			if(importance < verbosity) return;
+			if(importance >= verbosity) return;
 			
 			DataStore.StoreLogMessage(importance, component, shortMessage, fullMessage, DateTime.Now);
 			

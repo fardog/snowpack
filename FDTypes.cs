@@ -25,12 +25,13 @@ namespace snowpack
 		public DateTime whenQueued { get; set; }
 		public DateTime whenCompleted { get; set; }
 		public FileAttributes kind { get; set; }
+		public FileInfo info { get; set; }
 		public string checksum { get; set; }
 		public Guid guid { get; set; }
 		public int status { get; set; }
 		public FDGlacier glacier { get; set; }
 		
-		public FDQueueItem (string filePath, FileAttributes fileType)
+		public FDQueueItem (string filePath, FileAttributes fileType, int status)
 		{
 			path = filePath;
 			progress = 0;
@@ -86,11 +87,14 @@ namespace snowpack
 	
 	public struct FDItemStatus
 	{
-		public const int Queued = 0;
-		public const int Uploading = 1;
-		public const int FinishedUploading = 2;
-		public const int Downloading = 3;
-		public const int FinishedDownloading = 4;
+		public const int QueuedUpload = 0;
+		public const int QueuedDownload = 1;
+		public const int QueuedMisc = 3;
+		public const int Uploading = 4;
+		public const int Downloading = 5;
+		public const int FinishedUploading = 6;
+		public const int FinishedDownloading = 7;
+		public const int FinishedMisc = 8;
 		public const int Error = -1;
 	}
 	

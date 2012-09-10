@@ -159,19 +159,18 @@ public partial class FDQueueView : Gtk.Window
 		
 		
 		//Add to the OperationQueue
-		FDQueueItem addItem = new FDQueueItem(filePath, attr);
-		int success = operationQueue.Add (addItem);
-		FDQueueItem insertedItem = operationQueue.Get(success);
+		FDQueueItem addItem = new FDQueueItem(filePath, attr, FDItemStatus.QueuedUpload);
+		operationQueue.Add (addItem);
 		
 		//Add to the queue view
-		TreeIter iter = uploadQueue.AppendValues(filePath, "", insertedItem.guid);
-		ListItem item = new ListItem(filePath, insertedItem.progress, insertedItem.guid, iter);
+		TreeIter iter = uploadQueue.AppendValues(filePath, "", addItem.guid);
+		ListItem item = new ListItem(filePath, addItem.progress, addItem.guid, iter);
 		this.items.Add (item);
 	}
 	
 	protected void dequeueSelected()
 	{
-		TreeSelection selection;
+		/*TreeSelection selection;
 		selection = treeview1.Selection;
 		TreePath[] paths = selection.GetSelectedRows();
 		TreeModel model = treeview1.Model;
@@ -191,7 +190,8 @@ public partial class FDQueueView : Gtk.Window
 				log.Store (this.ToString(), "Item not in queue", "An item that was dequeued was missing from the GUI. " +
 					"You should check your archive to ensure everything was uploaded as expected.", FDLogVerbosity.Error);
 			}
-		}
+		}*/
+		throw new System.NotImplementedException("Not yet implemented with new queue code");
 	}
 	
 	//changes the "progress" secion on the tree view for the provided guid
@@ -211,7 +211,7 @@ public partial class FDQueueView : Gtk.Window
 	
 	private void _queueWork(object sender, DoWorkEventArgs e)
 	{
-		operationQueue.ProcessQueueWorker();
+		operationQueue.ProcessUploadQueueWorker();
 	}
 	
 	private void _queueDone(object sender, RunWorkerCompletedEventArgs e)
@@ -227,50 +227,50 @@ public partial class FDQueueView : Gtk.Window
 		uint ContextID = 1;
 		
 		while (true) {
-			switch(operationQueue.currentStatus)
+			//TODO Implement individual file status and progressbar
+			
+			//see if we have some currently running items to deal with
+			FDQueueItem currentItem;
+			while(operationQueue.current.TryPop(out currentItem))
 			{
-				case "checksum":
-					statusbar1.Pop (ContextID);
-					statusbar1.Push (ContextID, "Checksumming \"" +
-					                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
-					processing = true;
-					break;
-				case "upload":
-					statusbar1.Pop (ContextID);
-					statusbar1.Push (ContextID, "Uploading \"" +
-					                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
-					progressbar1.Fraction = (float)operationQueue.currentItem.progress / 100;
-					processing = true;
-					break;
-				case "store":
-					statusbar1.Pop (ContextID);
-					statusbar1.Push (ContextID, "Indexing \"" + 
-					                 System.IO.Path.GetFileName(operationQueue.currentFile) + "\"");
-					processing = true;
-					break;
-				default:
-					if(processing) {
-						statusbar1.Pop(ContextID);
-						progressbar1.Fraction = 0;
-						processing = false;
-					}
-					break;
+				string itemStatus;
+				switch (currentItem.status) //set a status message
+				{
+					case FDItemStatus.Uploading:
+						itemStatus = "Uploading";
+						break;
+					case FDItemStatus.Downloading:
+						itemStatus = "Downloading";
+						break;
+					default:
+						itemStatus = "Error: Check Log!";
+						break;
+				}
+				
+				//update the treeview
+				updateTree(currentItem.guid, itemStatus, currentItem.status);
 			}
 			
-			if(operationQueue.finished.Count > 0) { //if we have finished queue items to deal with
-				FDQueueItem finishItem = operationQueue.finished.Dequeue();
-				updateTree (finishItem.guid, "Finished", FDItemStatus.FinishedUploading);
-			}
-			
-			if(processing) {
-				//update the treeview with the currently uploading file
-				try {
-					updateTree(operationQueue.currentGuid, "Uploading", FDItemStatus.Uploading);
+			//see if we have some finished items to deal with
+			FDQueueItem finishItem;
+			while(operationQueue.finished.TryPop(out finishItem))
+			{
+				string itemStatus;
+				switch (finishItem.status) //set a status message
+				{
+					case FDItemStatus.FinishedUploading:
+						itemStatus = "Uploaded";
+						break;
+					case FDItemStatus.FinishedDownloading:
+						itemStatus = "Downloaded";
+						break;
+					default:
+						itemStatus = "Error: Check Log!";
+						break;
 				}
-				catch (Exception t) {
-					System.Console.WriteLine(t.Message);
-					log.Store(this.ToString(), "Error updating GUI", t.Message, FDLogVerbosity.Warning);
-				}
+				
+				//update the treeview
+				updateTree(finishItem.guid, itemStatus, finishItem.status);
 			}
 			
 			Thread.Sleep (500);
