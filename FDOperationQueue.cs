@@ -31,10 +31,23 @@ namespace snowpack
 		private FDUserSettings settings;
 		private FDOperationLog log;
 		
+		//the queue items
 		private ConcurrentQueue<FDQueueItem> uploadQueue;
 		private ConcurrentQueue<FDQueueItem> downloadQueue;
 		public ConcurrentStack<FDQueueItem> current;
 		public ConcurrentStack<FDQueueItem> finished;
+		
+		//the ignore list, which maintains objects that have been "dequeued"
+		//since we can't remove specific items from a ConcurrentQueue, we maintain a list of GUIDs which should be "skipped"
+		private HashSet<Guid> ignoreGuid;
+		
+		//progress items meant for reporting back to the frontend. Not to be trusted implicitly!
+		public int UploadProgress;
+		public int DownloadProgress;
+		public string UploadFile;
+		public string DownloadFile;
+		public bool UploadRunning;
+		public bool DownloadRunning;
 		
 		public FDOperationQueue (FDDataStore store, FDUserSettings userset, FDOperationLog oplog)
 		{
@@ -42,11 +55,14 @@ namespace snowpack
 			DataStore = store;
 			settings = userset;
 			log = oplog;
+			UploadRunning = DownloadRunning = false;
 			
 			uploadQueue = new ConcurrentQueue<FDQueueItem>();
 			downloadQueue = new ConcurrentQueue<FDQueueItem>();
 			current = new ConcurrentStack<FDQueueItem>();
 			finished = new ConcurrentStack<FDQueueItem>();
+			
+			ignoreGuid = new HashSet<Guid>();
 		}
 		
 		
@@ -59,6 +75,12 @@ namespace snowpack
 				downloadQueue.Enqueue(item);
 			else
 				throw new System.NotImplementedException("Queue doesn't yet support this item status");
+		}
+		
+		public bool Remove(Guid guid)
+		{
+			ignoreGuid.Add(guid);
+			return true;
 		}
 		
 		private void SaveQueue()
@@ -85,6 +107,18 @@ namespace snowpack
 		{
 			return this.uploadQueue.Count + this.downloadQueue.Count + this.current.Count;
 		}
+		
+		private void _uploadProgress(object sender, Amazon.Runtime.StreamTransferProgressArgs e)
+		{
+			if (e.PercentDone == UploadProgress) return;
+			UploadProgress = e.PercentDone;
+		}
+		
+		private void _downloadProgress(object sender, Amazon.Runtime.StreamTransferProgressArgs e)
+		{
+			if (e.PercentDone == UploadProgress) return;
+			DownloadProgress = e.PercentDone;
+		}
 		#endregion
 		
 		#region Upload Functions that are used for sending data to Glacier
@@ -94,19 +128,29 @@ namespace snowpack
 			{
 				if(uploadQueue.Count == 0 || pauseQueue) //if there's nothing to do at the moment, or if we're paused
 				{
+					if(UploadRunning) UploadRunning = false;
 					Thread.Sleep (1000);
 					continue;
 				}
 				
+				if(!UploadRunning) UploadRunning = true;
+				
 				//There's something to upload. Get it.
 				FDQueueItem currentUpload;
 				if(!uploadQueue.TryDequeue(out currentUpload)) continue;
+				
+				//if it's in our ignore list, don't upload
+				if(ignoreGuid.Contains(currentUpload.guid)) continue;
+				
+				//set status, and push to the frontend communication queue
 				currentUpload.status = FDItemStatus.Uploading;
 				current.Push(currentUpload);
 				
 				//pass to our (potentially) recursive function for upload
 				try {
 					this.ProcessFileUpload(currentUpload.path);
+					
+					//when we reach here, we've finished uploading
 					currentUpload.status = FDItemStatus.FinishedUploading;
 				}
 				catch (Exception e)
@@ -136,7 +180,7 @@ namespace snowpack
 				return; //if we're done processing all contents, return
 			}
 			
-			//Build our temporary item, and update all "current*" EXCEPT guid, since we use to communicate with frontend
+			//Build our temporary item for upload
 			FDQueueItem item = new FDQueueItem(fileName, FileAttributes.Normal, FDItemStatus.Uploading);
 			try
 			{
@@ -150,7 +194,8 @@ namespace snowpack
 				           FDLogVerbosity.Error);
 			}
 			
-			if (item.info.Length == 0) { //our file is zero bytes, Glacier won't accept it but we still want to remember
+			//our file is zero bytes, Glacier won't accept it but we still want to remember that it existed
+			if (item.info.Length == 0) {
 				DataStore.InsertFile(item.path,
 				                     "0",
 				                     item.info.Length,
@@ -159,7 +204,10 @@ namespace snowpack
 				return;
 			}
 			
-			//Calculate the file's checksum
+			//set the current file name for communication with the frontend
+			UploadFile = Path.GetFileName(item.path);
+			
+			//Calculate the file's checksum before upload, so we can check if it's uploaded before
 			FDChecksum fileChecksum = new FDChecksum(item.path);
 			try {
 				fileChecksum.CalculateChecksum();
@@ -173,9 +221,11 @@ namespace snowpack
 			}
 			item.checksum = fileChecksum.checksum;
 			
-			//Verfiy we haven't uploaded before by comparing checksum + filesize to db
+			//Verfiy we haven't uploaded previously by comparing checksum + filesize to db
 			string archiveId = DataStore.CheckExists(item.checksum, item.info.Length);
-			if (!String.IsNullOrEmpty(archiveId)) //if we got a response, re-insert the file to db and advance queue
+			
+			//if we got a response, re-insert the file to db to be remembered and advance queue
+			if (!String.IsNullOrEmpty(archiveId))
 			{
 				DataStore.InsertFile(item.path,
 				                     item.checksum,
@@ -188,7 +238,7 @@ namespace snowpack
 			//Upload the file
 			item.glacier = new FDGlacier(settings, log, "upload");
 			item.glacier.archiveDescription = System.IO.Path.GetFileName (item.path);
-			item.glacier.setCallback(item._updateProgress);
+			item.glacier.setCallback(this._uploadProgress);
 			try {
 				item.glacier.uploadFile(item.path);
 			}
@@ -200,7 +250,7 @@ namespace snowpack
 				return;
 			}
 			
-			//Store the result
+			//Store the result to db
 			DataStore.InsertFile(item.path, 
 			                     item.checksum, 
 			                     item.info.Length, 
