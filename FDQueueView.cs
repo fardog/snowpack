@@ -235,6 +235,7 @@ public partial class FDQueueView : Gtk.Window
 	{
 		uint ContextID = 1; //contextid for our statusbar updates
 		string LastUploadFile = null;
+		bool LastPopped = true;
 		
 		while (true) {
 			//TODO Implement individual file status and progressbar
@@ -293,15 +294,17 @@ public partial class FDQueueView : Gtk.Window
 					statusbar1.Pop(ContextID);
 					statusbar1.Push (ContextID, "Uploading: " + UploadFile);
 					LastUploadFile = UploadFile;
+					LastPopped = false;
 				}
 				
 				if(UploadProgress > 0) progressbar1.Fraction = (float)UploadProgress/100;
 				else progressbar1.Fraction = 0.0;
 			}
-			else
+			else if (!LastPopped)
 			{
 				statusbar1.Pop(ContextID);
 				progressbar1.Fraction = 0.0;
+				LastPopped = true;
 			}
 			
 			Thread.Sleep (500);

@@ -105,7 +105,10 @@ namespace snowpack
 		
 		public int QueueSize()
 		{
-			return this.uploadQueue.Count + this.downloadQueue.Count + this.current.Count;
+			int count = 0;
+			if(UploadRunning) count++;
+			if(DownloadRunning) count++;
+			return this.uploadQueue.Count + this.downloadQueue.Count + this.current.Count + count;
 		}
 		
 		private void _uploadProgress(object sender, Amazon.Runtime.StreamTransferProgressArgs e)
