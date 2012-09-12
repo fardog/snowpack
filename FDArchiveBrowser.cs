@@ -4,25 +4,34 @@ using Gtk;
 
 namespace snowpack
 {
+	public class ArchiveSelectedEventArgs : EventArgs
+	{
+		public List<string> archiveIDs;
+		public List<Int64> paths;
+	}
+	
 	public partial class FDArchiveBrowser : Gtk.Window
 	{
 		private FDDataStore DataStore;
 		private Gtk.TreeStore TreeModel;
+		public event ArchiveRestoreHandler ArchivesSelectedForRestore;
+		public EventArgs e = null;
+		public delegate void ArchiveRestoreHandler(FDArchiveBrowser b, ArchiveSelectedEventArgs e);
 		
 		public FDArchiveBrowser (FDDataStore ds) : base(Gtk.WindowType.Toplevel)
 		{
 			this.Build ();
 			DataStore = ds;
 			TreeModel = new Gtk.TreeStore(
-				typeof(string), //file or dirname, 0
-				typeof(string), //time modified, 1
-				typeof(string), //time uploaded, 2
-				typeof(int), //versions, 3
-				typeof(string), //checksum, 4
-				typeof(string), //archiveid, 5
-				typeof(Int64), //id 6
-				typeof(Int64), //parent 7
-				typeof(bool) //if expanded 8
+				typeof(string),	//file or dirname, 0
+				typeof(string),	//time modified, 1
+				typeof(string),	//time uploaded, 2
+				typeof(int),	//versions, 3
+				typeof(string),	//checksum, 4
+				typeof(string),	//archiveid, 5
+				typeof(Int64),	//id 6
+				typeof(Int64),	//parent 7
+				typeof(bool)	//if expanded 8
 			);
 			
 			
@@ -53,7 +62,6 @@ namespace snowpack
 			//insert root node, and populate the first set of directories/files
 			TreeIter rootIter = TreeModel.AppendValues ("(root)");
 			TreeModel.AppendValues (rootIter, "(loading…)");
-			//this.LoadDirectories(rootIter, new FDArchiveDirectory(0, "", 0));
 		}
 		
 		private void LoadDirectories (Gtk.TreeIter parentIter, FDArchiveDirectory parent)
@@ -98,6 +106,38 @@ namespace snowpack
 			
 			return;
 		}
+		
+		//the endpoint for clicking the "restore" button in the interface
+		private void RestoreItems(object o, System.EventArgs e)
+		{
+			//get the selected items
+			Gtk.TreeSelection selection = treeview1.Selection;
+			Gtk.TreePath[] selectionPath = selection.GetSelectedRows();
+			
+			if(selectionPath.Length < 1) return;
+			
+			//build our arguments to send to the listener
+			ArchiveSelectedEventArgs args = new ArchiveSelectedEventArgs();
+			args.archiveIDs = new List<string>();
+			args.paths = new List<Int64>();
+			
+			//iterate over the selections
+			foreach (Gtk.TreePath path in selectionPath)
+			{
+				TreeIter iter;
+				
+				if(!selection.TreeView.Model.GetIter(out iter, path)) continue;
+				string archiveID = (string)selection.TreeView.Model.GetValue(iter, 5); //if we have an archive id, add it to the list
+				if(!String.IsNullOrWhiteSpace(archiveID)) args.archiveIDs.Add (archiveID);
+				else { //otherwise, we're on a directory
+					Int64 directoryID = (Int64)selection.TreeView.Model.GetValue(iter, 6);
+					args.paths.Add(directoryID);
+				}
+			}
+			
+			//fire the event
+			ArchivesSelectedForRestore(this, args);
+		}
 
 		protected void OnTreeview1RowExpanded (object o, Gtk.RowExpandedArgs args)
 		{
@@ -120,20 +160,27 @@ namespace snowpack
 			Gtk.TreeSelection selection = sender as Gtk.TreeSelection;
 			Gtk.TreePath[] selectionPath = selection.GetSelectedRows();
 			
-			if(selectionPath.Length < 1) return;
-			
-			foreach (Gtk.TreePath path in selectionPath)
-			{
-				TreeIter iter;
-				if(!selection.TreeView.Model.GetIter(out iter, path)) continue;
-				string archiveID = (string)selection.TreeView.Model.GetValue(iter, 5);
-				if(!String.IsNullOrWhiteSpace(archiveID)) System.Console.WriteLine(archiveID);
+			if(selectionPath.Length < 1) {
+				buttonRestore.Sensitive = false;
+				return;
 			}
+			
+			buttonRestore.Sensitive = true;
 		}
 
 		protected void OnCloseActionActivated (object sender, System.EventArgs e)
 		{
 			this.Destroy ();
+		}
+
+		protected void OnButtonRestoreActivated (object sender, System.EventArgs e)
+		{
+			RestoreItems (sender, e);
+		}
+
+		protected void OnButtonRestoreClicked (object sender, System.EventArgs e)
+		{
+			RestoreItems (sender, e);
 		}
 	}
 }

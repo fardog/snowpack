@@ -77,6 +77,7 @@ namespace snowpack
 				throw new System.NotImplementedException("Queue doesn't yet support this item status");
 		}
 		
+		//adds a guid to the "ignore" list, so we skip it when it comes across in the queue
 		public bool Remove(Guid guid)
 		{
 			ignoreGuid.Add(guid);
@@ -88,6 +89,7 @@ namespace snowpack
 			
 		}
 		
+		//stops after the current queue item, and saves the queue
 		public void StopQueue()
 		{
 			stopQueue = true;
@@ -150,7 +152,8 @@ namespace snowpack
 				current.Push(currentUpload);
 				
 				//pass to our (potentially) recursive function for upload
-				try {
+				try 
+				{
 					this.ProcessFileUpload(currentUpload.path);
 					
 					//when we reach here, we've finished uploading
@@ -198,7 +201,8 @@ namespace snowpack
 			}
 			
 			//our file is zero bytes, Glacier won't accept it but we still want to remember that it existed
-			if (item.info.Length == 0) {
+			if (item.info.Length == 0) 
+			{
 				DataStore.InsertFile(item.path,
 				                     "0",
 				                     item.info.Length,
@@ -212,10 +216,12 @@ namespace snowpack
 			
 			//Calculate the file's checksum before upload, so we can check if it's uploaded before
 			FDChecksum fileChecksum = new FDChecksum(item.path);
-			try {
+			try 
+			{
 				fileChecksum.CalculateChecksum();
 			}
-			catch (Exception e) {
+			catch (Exception e) 
+			{
 				log.Store (this.ToString(),
 				           "Failed to checksum on " + item.path,
 				           "Exception info was: " + e.Message,
@@ -238,14 +244,16 @@ namespace snowpack
 				return;
 			}
 			
-			//Upload the file
+			//If we've made it this far, we're ready to upload the file
 			item.glacier = new FDGlacier(settings, log, "upload");
 			item.glacier.archiveDescription = System.IO.Path.GetFileName (item.path);
 			item.glacier.setCallback(this._uploadProgress);
-			try {
+			try 
+			{
 				item.glacier.uploadFile(item.path);
 			}
-			catch (Exception e) {
+			catch (Exception e) 
+			{
 				log.Store(this.ToString(),
 				          "Failed to upload on " + item.path,
 				          "Exception info was: " + e.Message,

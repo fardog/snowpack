@@ -27,10 +27,10 @@ public partial class FDQueueView : Gtk.Window
 {
 	private FDOperationQueue operationQueue;
 	private FDOperationLog log;
-	private BackgroundWorker queueWorker;
+	private BackgroundWorker uploadQueueWorker;
 	private FDUserSettings UserSettings;
-	private FDDataStore DataStore;
-	private Gtk.ListStore uploadQueue; //the datastore for the treeview
+	private FDDataStore DataStore; //our sqlite database interface
+	private Gtk.ListStore uploadQueue; //the model for the treeview
 	private BackgroundWorker updateUIWorker;
 	
 	
@@ -102,12 +102,12 @@ public partial class FDQueueView : Gtk.Window
 		}
 		
 		//Create the uploader thread
-		queueWorker = new BackgroundWorker();
-		queueWorker.DoWork += new DoWorkEventHandler(_queueWork);
-		queueWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_queueDone);
-		if(!queueWorker.IsBusy)
+		uploadQueueWorker = new BackgroundWorker();
+		uploadQueueWorker.DoWork += new DoWorkEventHandler(_uploadQueueWork);
+		uploadQueueWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_uploadQueueDone);
+		if(!uploadQueueWorker.IsBusy)
 		{
-			queueWorker.RunWorkerAsync();
+			uploadQueueWorker.RunWorkerAsync();
 		}
 		
 		//Now create the UI update thread that watches the uploader
@@ -219,12 +219,12 @@ public partial class FDQueueView : Gtk.Window
 		}
 	}
 	
-	private void _queueWork(object sender, DoWorkEventArgs e)
+	private void _uploadQueueWork(object sender, DoWorkEventArgs e)
 	{
 		operationQueue.ProcessUploadQueueWorker();
 	}
 	
-	private void _queueDone(object sender, RunWorkerCompletedEventArgs e)
+	private void _uploadQueueDone(object sender, RunWorkerCompletedEventArgs e)
 	{
 		if(operationQueue.wasStopped) //we were stopped intentionally
 			return;
@@ -361,6 +361,7 @@ public partial class FDQueueView : Gtk.Window
 	protected void ArchiveDialog (object sender, System.EventArgs e)
 	{
 		FDArchiveBrowser browser = new FDArchiveBrowser(this.DataStore);
+		browser.ArchivesSelectedForRestore += OnArchivesRestore;
 		browser.Show ();
 	}
 	
@@ -384,6 +385,21 @@ public partial class FDQueueView : Gtk.Window
 		
 		buttonRemove.Sensitive = true;
 		RemoveSelectedAction.Sensitive = true;
+	}
+	
+	//handles the restore event from the ArchiveBrowser
+	protected void OnArchivesRestore (object sender, ArchiveSelectedEventArgs e)
+	{
+		foreach (string s in e.archiveIDs)
+		{
+			System.Console.WriteLine(
+				DataStore.GetFullPath(DataStore.GetFileParent(s)) + DataStore.GetFileName(s));
+		}
+		foreach (Int64 p in e.paths)
+		{
+			string path = DataStore.GetFullPath(p);
+			System.Console.WriteLine(path);
+		}
 	}
 	
 	/* UI Interaction Bits
@@ -451,7 +467,22 @@ public partial class FDQueueView : Gtk.Window
 		dialog.ProgramName = "snowpack";
 		dialog.Version = "0.1.0";
 		dialog.Comments = "A cross-platform Amazon Glacier Client";
-		dialog.Authors = new string [] {"Nathan Wittstock"};
+		dialog.Authors = new string [] {
+			"Nathan Wittstock, Far Dog LLC", "",
+			"Using the AWS SDK\n" +
+			"\t©2009–2012 Amazon Technologies, Inc.\n" +
+			"\tReleased under the Apache 2.0 License" };
+		dialog.Copyright = "©2012 Far Dog LLC";
+		dialog.License = 
+			"Copyright 2012 Far Dog LLC or its affiliates. All Rights Reserved.\n\n" +
+			"Licensed under the GNU General Public License, Version 3.0 (the \"License\").\n" +
+			"You may not use this file except in compliance with the License.\n" +
+			"A copy of the License is located at\n\n" +
+			"http://www.gnu.org/licenses/gpl-3.0.txt\n\n" +
+			"or in the \"gpl-3.0\" file accompanying this file. This file is distributed\n" +
+			"on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\n" +
+			"express or implied. See the License for the specific language governing\n" +
+			"permissions and limitations under the License.";
 		dialog.Website = "http://fardogllc.com/";
 		
 		dialog.Run ();

@@ -704,6 +704,8 @@ Asia Pacific (Tokyo)</property>
                 <property name="Type">TextOnly</property>
                 <property name="Label" translatable="yes">_Restore</property>
                 <property name="UseUnderline">True</property>
+                <signal name="Activated" handler="OnButtonRestoreActivated" />
+                <signal name="Clicked" handler="OnButtonRestoreClicked" />
               </widget>
               <packing>
                 <property name="Position">0</property>

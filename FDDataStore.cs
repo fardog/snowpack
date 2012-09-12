@@ -42,8 +42,7 @@ namespace snowpack
 					}
 					catch (Exception e)
 					{
-						System.Console.WriteLine ("Couldn't create data store directory. Bailing.\n" + e.Message);
-						Gtk.Application.Quit();
+						throw new Exception("Couldn't create data store directory. " + e.Message);
 					}
 				}
 				
@@ -53,8 +52,7 @@ namespace snowpack
 				}
 				catch (Exception e)
 				{
-					System.Console.WriteLine ("Couldn't create the data store file. Bailing.\n" + e.Message);
-					Gtk.Application.Quit ();
+					throw new Exception("Couldn't create the data store file. " + e.Message);
 				}
 			
 			}
@@ -107,8 +105,7 @@ namespace snowpack
 			}
 			catch (Exception e)
 			{
-				System.Console.WriteLine("Couldn't create the sqlite tables. Bailing.\n" + e.Message);
-				Gtk.Application.Quit ();
+				throw new Exception("Couldn't create the sqlite tables. " + e.Message);
 			}
 			
 			return retvalue;
@@ -217,6 +214,51 @@ namespace snowpack
 			return items;		
 		}
 		
+		public string GetFileName(string archiveID)
+		{
+			IDbCommand getFileName = dbcon.CreateCommand();
+			getFileName.CommandText = "SELECT `file_name` FROM `file` where `file_archiveid` = \"" + archiveID + "\"";
+			
+			return (string)getFileName.ExecuteScalar();
+		}
+		
+		public Int64 GetFileParent(string archiveID)
+		{
+			IDbCommand getFileParent = dbcon.CreateCommand();
+			getFileParent.CommandText = "SELECT `file_directory` FROM `file` where `file_archiveid` = \"" + archiveID + "\"";
+			
+			return (Int64)getFileParent.ExecuteScalar();
+		}
+		
+		//gets the full path of a directory, based on the directory's id
+		public string GetFullPath(Int64 directoryID)
+		{
+			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			List<string> directories = new List<string>();
+			
+			while(directoryID != 0)
+			{
+				IDbCommand getDirectoryName = dbcon.CreateCommand();
+				getDirectoryName.CommandText = "SELECT `directory_name`,`directory_parent` FROM `directory` where `directory_id` = " + directoryID.ToString();
+				
+				IDataReader reader = getDirectoryName.ExecuteReader();
+				while(reader.Read ())
+				{
+					directories.Add (reader.GetString(0));
+					directoryID = reader.GetInt64(1);
+				}
+			}
+			
+			directories.Reverse();
+			sb.Append(System.IO.Path.DirectorySeparatorChar);
+			foreach (string directory in directories)
+			{
+				sb.Append(directory + System.IO.Path.DirectorySeparatorChar);
+			}
+			
+			return sb.ToString();
+		}
+		
 		public int StoreQueue(FDQueueItem item) {
 			return 0;
 		}
@@ -273,7 +315,7 @@ namespace snowpack
 				"INSERT INTO `directory` VALUES (NULL, \"" + directoryName + "\", " + parent.ToString() + ");";
 			insertDirectory.ExecuteNonQuery();
 			
-			//TODO there must be a better way to get last insert id
+			//TODO there must be a better/safer way to get last insert id
 			IDbCommand lastParent = dbcon.CreateCommand();
 			lastParent.CommandText = "SELECT max(directory_id) from `directory`;";
 			
