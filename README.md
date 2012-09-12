@@ -9,31 +9,28 @@ Intro
 -----
 
 **snowpack** is (someday) a complete GUI client and backup solution for
-Amazon Glacier. Right now it's a heavy work-in-progress; able to store files
-but not retrieve them. 
+Amazon Glacier. Right now it's a heavy work-in-progress, but is more capable
+all the time.
 
 **snowpack is incomplete, and not recommended for anyone's use at the moment.**
+While you'll be able to store files to Glacier, and view _what_ you've stored,
+there is no method for retrieving files (or performing a test restore) yet.
 
 Status
 ------
 
 Right now, snowpack can store any file to Glacier, and stores the ID of any
-archived file to an SQLite DB for later retrieval. It stores full directory
-structure, and will include a tree browser for requesting restores. There is
-a basic de-duplication process in place, where file checksums and sizes are
-stored, and a file is considered to be a duplicate if those two items match
-a previously stored file. The file's location and other info are still stored
-in the database as though it was uploaded.
+archived file to an SQLite DB for later retrieval. There is a basic de-
+duplication process in place, where file checksums and sizes are stored, and a
+file is considered to be a duplicate if those two items match a previously 
+stored file. The file's location and other info are still stored in the 
+database as though it was uploaded.
 
-Now that I feel like this is a successful test, the current areas of work are:
+Current areas of work are:
 
- - Creating an upload queue *(done)*
- - Separating upload code from interface code *(done)*
- - Adding support for recursive/directory uploads *(done)*
- - Proper error recovery (upload fails, etc.)
+ - File restores and deletions from Glacier
+ - Log viewer for tracking any upload failures.
  - More thorough upload queue management, save on quit
- - GUI managed preferences for AWS keys and etc. *(done)*
- - Adding a backup archive browser, and the ability to make file requests
 
 The future will be:
 
@@ -42,7 +39,7 @@ The future will be:
    checks progress.
  - Create backups of file index/SQLite database to Glacier
  - Retrieving vault list from AWS
- - Performing automated restores using Amazon SNS
+ - Resuming restore jobs if the application is quit
  
 
 Misc
