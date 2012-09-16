@@ -110,6 +110,7 @@ namespace snowpack
 			this.Show ();
 			this.CloseAction.Activated += new global::System.EventHandler (this.OnCloseActionActivated);
 			this.treeview1.RowExpanded += new global::Gtk.RowExpandedHandler (this.OnTreeview1RowExpanded);
+			this.treeview1.KeyPressEvent += new global::Gtk.KeyPressEventHandler (this.OnTreeview1KeyPressEvent);
 			this.buttonRestore.Activated += new global::System.EventHandler (this.OnButtonRestoreActivated);
 			this.buttonRestore.Clicked += new global::System.EventHandler (this.OnButtonRestoreClicked);
 		}

@@ -132,6 +132,8 @@ namespace snowpack
 		
 		public void RequestArchive(string savePath)
 		{
+			Console.WriteLine("Vault name: " + vaultName + "\nArchiveID: " + this.archiveID + "\nSave Path: " + savePath + "\nCallback: " + 
+			                  downOptions.StreamTransferProgress.ToString());
 			try {
 				transferManager.Download(vaultName, archiveID, savePath, downOptions);
 			}

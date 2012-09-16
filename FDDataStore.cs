@@ -26,9 +26,9 @@ namespace snowpack
 		private string DataStoreURI;
 		private IDbConnection dbcon;
 		public bool ready = false;
-		private int verbosity;
+		private FDLogVerbosity verbosity;
 		
-		public FDDataStore (string DataStore, int logVerbosity)
+		public FDDataStore (string DataStore, FDLogVerbosity logVerbosity)
 		{
 			DataStoreURI = DataStore;
 			verbosity = logVerbosity;
@@ -264,13 +264,14 @@ namespace snowpack
 		}
 		
 		//stores a message to the log table
-		public int StoreLogMessage(int importance, string component, string smessage, string lmessage, DateTime timestamp)
+		public int StoreLogMessage(FDLogVerbosity importance, string component, string smessage, string lmessage, DateTime timestamp)
 		{
+			int im = (int)importance; //cast to int for storage
 			IDbCommand logInsert = dbcon.CreateCommand();
 			
 			logInsert.CommandText = 
 				"INSERT INTO log VALUES (NULL," +
-				importance.ToString() + "," +
+				im.ToString() + "," +
 				"\"" + component + "\"," +
 				"\"" + smessage + "\"," +
 				"\"" + lmessage + "\"," +

@@ -20,9 +20,9 @@ Status
 ------
 
 Right now, snowpack can store any file to Glacier, and stores the ID of any
-archived file to an SQLite DB for later retrieval. There is a basic de-
-duplication process in place, where file checksums and sizes are stored, and a
-file is considered to be a duplicate if those two items match a previously 
+archived file to an SQLite DB for later retrieval. There is a basic 
+de-duplication process in place, where file checksums and sizes are stored, and
+a file is considered to be a duplicate if those two items match a previously 
 stored file. The file's location and other info are still stored in the 
 database as though it was uploaded.
 

@@ -684,6 +684,7 @@ Asia Pacific (Tokyo)</property>
                 <property name="CanFocus">True</property>
                 <property name="ShowScrollbars">True</property>
                 <signal name="RowExpanded" handler="OnTreeview1RowExpanded" />
+                <signal name="KeyPressEvent" handler="OnTreeview1KeyPressEvent" />
               </widget>
             </child>
           </widget>

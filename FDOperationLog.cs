@@ -5,19 +5,19 @@ namespace snowpack
 	public class FDOperationLog
 	{
 		FDDataStore DataStore;
-		int verbosity;
+		FDLogVerbosity verbosity;
 		bool console;
 		
-		public FDOperationLog (FDDataStore ds, int logVerbosity, bool toConsole)
+		public FDOperationLog (FDDataStore ds, FDLogVerbosity logVerbosity, bool toConsole)
 		{
 			DataStore = ds;
 			verbosity = logVerbosity;
 			console = toConsole;
 		}
 		
-		public void Store (string component, string shortMessage, string fullMessage, int importance)
+		public void Store (string component, string shortMessage, string fullMessage, FDLogVerbosity importance)
 		{
-			if(importance >= verbosity) return;
+			if((int)importance >= (int)verbosity) return;
 			
 			DataStore.StoreLogMessage(importance, component, shortMessage, fullMessage, DateTime.Now);
 			

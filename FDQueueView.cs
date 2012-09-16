@@ -28,6 +28,7 @@ public partial class FDQueueView : Gtk.Window
 	private FDOperationQueue operationQueue;
 	private FDOperationLog log;
 	private BackgroundWorker uploadQueueWorker;
+	private BackgroundWorker downloadQueueWorker;
 	private FDUserSettings UserSettings;
 	private FDDataStore DataStore; //our sqlite database interface
 	private Gtk.ListStore uploadQueue; //the model for the treeview
@@ -66,7 +67,7 @@ public partial class FDQueueView : Gtk.Window
 		
 		//Create the item list
 		items = new List<ListItem>();
-		this.uploadQueue = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(string), typeof(Guid), typeof(int));
+		this.uploadQueue = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(string), typeof(Guid), typeof(FDItemStatus));
 		
 		//Create the tree view columns and misc
 		TreeViewColumn icon = new TreeViewColumn();
@@ -108,6 +109,15 @@ public partial class FDQueueView : Gtk.Window
 		if(!uploadQueueWorker.IsBusy)
 		{
 			uploadQueueWorker.RunWorkerAsync();
+		}
+		
+		//Create the downloader thred
+		downloadQueueWorker = new BackgroundWorker();
+		downloadQueueWorker.DoWork += new DoWorkEventHandler(_downloadQueueWork);
+		downloadQueueWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_downloadQueueDone);
+		if(!downloadQueueWorker.IsBusy)
+		{
+			downloadQueueWorker.RunWorkerAsync();
 		}
 		
 		//Now create the UI update thread that watches the uploader
@@ -160,9 +170,7 @@ public partial class FDQueueView : Gtk.Window
 	
 	protected void enqueueUpload(string filePath)
 	{
-		if(String.IsNullOrWhiteSpace(filePath)) throw new ArgumentNullException("You must provide a valid file path to enqueue.");
-		FileAttributes attr = File.GetAttributes(filePath);
-		
+		FileAttributes attr = File.GetAttributes(filePath);	
 		
 		//Add to the OperationQueue
 		FDQueueItem addItem = new FDQueueItem(filePath, attr, FDItemStatus.QueuedUpload);
@@ -174,9 +182,18 @@ public partial class FDQueueView : Gtk.Window
 		this.items.Add (item);
 	}
 	
-	protected void enqueueDownload(string archiveID)
-	{
-		if(String.IsNullOrWhiteSpace(archiveID)) throw new ArgumentNullException("You must provide a valid Archive ID to enqueue.");
+	protected void enqueueDownload(string filePath, FileAttributes fileType, string restoreTo, string archiveID = null)
+	{	
+		//add to the operationqueue
+		FDQueueItem addItem = new FDQueueItem(filePath, fileType, FDItemStatus.QueuedDownload);
+		addItem.archiveID = archiveID;
+		addItem.downloadPath = restoreTo;
+		operationQueue.Add (addItem);
+		
+		//add to the queue view
+		TreeIter iter = uploadQueue.AppendValues(new Gdk.Pixbuf(null, "snowpack.assets.download.png"), filePath, "", addItem.guid);
+		ListItem item = new ListItem(filePath, addItem.progress, addItem.guid, iter);
+		this.items.Add (item);
 	}
 	
 	protected void dequeueSelected()
@@ -193,7 +210,7 @@ public partial class FDQueueView : Gtk.Window
 			Guid guid = (Guid)uploadQueue.GetValue (iter, 3);
 			if(operationQueue.Remove (guid)) //only remove from the tree if we can remove from the opqueue
 				uploadQueue.Remove (ref iter);
-			else if ((int)uploadQueue.GetValue(iter, 4) == FDItemStatus.FinishedUploading) //it's finished, so we can remove
+			else if ((FDItemStatus)uploadQueue.GetValue(iter, 4) == FDItemStatus.FinishedUploading) //it's finished, so we can remove
 				uploadQueue.Remove (ref iter);
 			else { //we couldn't find it, set an error
 				uploadQueue.SetValue (iter, 2, "Not in Queue"); 
@@ -205,7 +222,7 @@ public partial class FDQueueView : Gtk.Window
 	}
 	
 	//changes the "progress" secion on the tree view for the provided guid
-	private void updateTree(Guid guid, string message, int status)
+	private void updateTree(Guid guid, string message, FDItemStatus status)
 	{
 		ListItem toUpdate = items.Find (
 			delegate(ListItem it) {
@@ -229,6 +246,18 @@ public partial class FDQueueView : Gtk.Window
 		if(operationQueue.wasStopped) //we were stopped intentionally
 			return;
 		else throw new Exception("Upload queue thread stopped unexpectedly.");
+	}
+	
+	private void _downloadQueueWork(object sender, DoWorkEventArgs e)
+	{
+		operationQueue.ProcessDownloadQueueWorker();
+	}
+	
+	private void _downloadQueueDone(object sender, RunWorkerCompletedEventArgs e)
+	{
+		if(operationQueue.wasStopped) //we were stopped intentionally
+			return;
+		else throw new Exception("Download queue thread stopped unexpectedly.");
 	}
 	
 	private void _updateUIWork(object sender, DoWorkEventArgs e)
@@ -390,15 +419,17 @@ public partial class FDQueueView : Gtk.Window
 	//handles the restore event from the ArchiveBrowser
 	protected void OnArchivesRestore (object sender, ArchiveSelectedEventArgs e)
 	{
+		string fileName;
+		
 		foreach (string s in e.archiveIDs)
 		{
-			System.Console.WriteLine(
-				DataStore.GetFullPath(DataStore.GetFileParent(s)) + DataStore.GetFileName(s));
+			fileName = DataStore.GetFullPath(DataStore.GetFileParent(s)) + DataStore.GetFileName(s);
+			enqueueDownload(fileName,FileAttributes.Normal,e.restoreTo,s);
 		}
 		foreach (Int64 p in e.paths)
 		{
-			string path = DataStore.GetFullPath(p);
-			System.Console.WriteLine(path);
+			fileName = DataStore.GetFullPath(p);
+			enqueueDownload(fileName,FileAttributes.Directory,e.restoreTo);
 		}
 	}
 	

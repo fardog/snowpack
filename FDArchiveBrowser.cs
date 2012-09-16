@@ -8,6 +8,7 @@ namespace snowpack
 	{
 		public List<string> archiveIDs;
 		public List<Int64> paths;
+		public string restoreTo;
 	}
 	
 	public partial class FDArchiveBrowser : Gtk.Window
@@ -110,6 +111,25 @@ namespace snowpack
 		//the endpoint for clicking the "restore" button in the interface
 		private void RestoreItems(object o, System.EventArgs e)
 		{
+			//ask where we're restoring to
+			Gtk.FileChooserDialog restoreTo = new Gtk.FileChooserDialog("Where should files be saved?",
+		                                                         this,
+		                                                         FileChooserAction.SelectFolder,
+		                                                         "Cancel",ResponseType.Cancel,
+		                                                         "Restore",ResponseType.Accept);
+			string restorePath;
+			
+			if (restoreTo.Run () == (int)ResponseType.Accept)
+			{
+				restorePath = restoreTo.Filename;
+				restoreTo.Destroy();
+			}
+			else
+			{
+				restoreTo.Destroy();
+				return;
+			}
+			
 			//get the selected items
 			Gtk.TreeSelection selection = treeview1.Selection;
 			Gtk.TreePath[] selectionPath = selection.GetSelectedRows();
@@ -120,6 +140,7 @@ namespace snowpack
 			ArchiveSelectedEventArgs args = new ArchiveSelectedEventArgs();
 			args.archiveIDs = new List<string>();
 			args.paths = new List<Int64>();
+			args.restoreTo = restorePath;
 			
 			//iterate over the selections
 			foreach (Gtk.TreePath path in selectionPath)
@@ -181,6 +202,49 @@ namespace snowpack
 		protected void OnButtonRestoreClicked (object sender, System.EventArgs e)
 		{
 			RestoreItems (sender, e);
+		}
+		
+		//captures the right and left key presses to expand/collapse the tree node
+		//this exists to make nautilus-style treeview browsing a crazy reality
+		[GLib.ConnectBefore] //need to do this so i get called first
+		protected void OnTreeview1KeyPressEvent (object tree, Gtk.KeyPressEventArgs args)
+		{
+			TreeSelection selection = treeview1.Selection;
+			TreePath[] selectionPath = selection.GetSelectedRows();
+			
+			if(selectionPath.Length > 1) return; //do nothing if there's more than one item selected
+			
+			foreach (TreePath path in selectionPath)
+			{
+				if(args.Event.Key == Gdk.Key.Right)
+				{
+					treeview1.ExpandRow(path, false);
+				}
+				else if (args.Event.Key == Gdk.Key.Left)
+				{
+					if(treeview1.GetRowExpanded(path))
+						treeview1.CollapseRow(path);
+					else {
+						path.Up();
+						treeview1.SetCursor(path, null, false);
+						selection.UnselectAll();
+						selection.SelectPath(path);
+					}
+				}
+			}
+			
+			//selects the middle column so we don't have to hear a 'bonk' while navigating
+			//since the treeview selects columns with left/right keys (although invisible and useless for us)
+			//it will still complain loudly when it 'hits' the end or start, visible or not
+			TreeSelection innerSelection = treeview1.Selection;
+			TreePath[] innerTreePath = innerSelection.GetSelectedRows();
+			if(innerTreePath.Length < 1) return;
+			innerSelection.UnselectAll();
+			foreach (TreePath path in innerTreePath)
+			{
+				treeview1.SetCursor(innerTreePath[0], treeview1.Columns[1], false);
+			}
+			
 		}
 	}
 }

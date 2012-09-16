@@ -28,10 +28,12 @@ namespace snowpack
 		public FileInfo info { get; set; }
 		public string checksum { get; set; }
 		public Guid guid { get; set; }
-		public int status { get; set; }
+		public FDItemStatus status { get; set; }
 		public FDGlacier glacier { get; set; }
+		public string archiveID { get; set; }
+		public string downloadPath { get; set; }
 		
-		public FDQueueItem (string filePath, FileAttributes fileType, int status)
+		public FDQueueItem (string filePath, FileAttributes fileType, FDItemStatus st)
 		{
 			path = filePath;
 			progress = 0;
@@ -39,6 +41,7 @@ namespace snowpack
 			kind = fileType;
 			checksum = null;
 			guid = Guid.NewGuid();
+			status = st;
 		}
 		
 		public void _updateProgress(object sender, Amazon.Runtime.StreamTransferProgressArgs e)
@@ -85,26 +88,26 @@ namespace snowpack
 		}
 	}
 	
-	public struct FDItemStatus
+	public enum FDItemStatus
 	{
-		public const int QueuedUpload = 0;
-		public const int QueuedDownload = 1;
-		public const int QueuedMisc = 3;
-		public const int Uploading = 4;
-		public const int Downloading = 5;
-		public const int FinishedUploading = 6;
-		public const int FinishedDownloading = 7;
-		public const int FinishedMisc = 8;
-		public const int Error = -1;
+		QueuedUpload,
+		QueuedDownload,
+		QueuedMisc,
+		Uploading,
+		Downloading,
+		FinishedUploading,
+		FinishedDownloading,
+		FinishedMisc,
+		Error
 	}
 	
-	public struct FDLogVerbosity
+	public enum FDLogVerbosity
 	{
-		public const int Silent = 0;
-		public const int Error = 1;
-		public const int Warning = 2;
-		public const int Information = 3;
-		public const int Debug = 4;
+		Silent,
+		Error,
+		Warning,
+		Information,
+		Debug
 	}
 }
 

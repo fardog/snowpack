@@ -49,6 +49,9 @@ namespace snowpack
 		public bool UploadRunning;
 		public bool DownloadRunning;
 		
+		//thread pool for download threads
+		private int MaxDownloadThreads = 5;
+		
 		public FDOperationQueue (FDDataStore store, FDUserSettings userset, FDOperationLog oplog)
 		{
 			stopQueue = false;
@@ -267,6 +270,68 @@ namespace snowpack
 			                     item.info.Length, 
 			                     item.info.LastWriteTimeUtc, 
 			                     item.glacier.result.ArchiveId);
+		}
+		#endregion
+		
+		#region Download Functions that process the download queue
+		public void ProcessDownloadQueueWorker()
+		{	
+			while(!stopQueue)
+			{
+				if(downloadQueue.Count == 0 || pauseQueue) //if there's nothing to do at the moment, or if we're paused
+				{
+					if(DownloadRunning) DownloadRunning = false;
+					Thread.Sleep (1000);
+					continue;
+				}
+				
+				if(!DownloadRunning) DownloadRunning = true;
+				
+				//There's something to download. Get it.
+				FDQueueItem currentDownload;
+				if(!downloadQueue.TryDequeue(out currentDownload)) continue;
+				
+				//if it's in our ignore list, don't download
+				if(ignoreGuid.Contains(currentDownload.guid)) continue;
+				
+				//set status, and push to the frontend communication queue
+				currentDownload.status = FDItemStatus.Downloading;
+				current.Push(currentDownload);
+				
+				//pass to our (potentially) recursive function for download
+				try 
+				{
+					this.ProcessFileDownload(currentDownload);
+					
+					//when we reach here, we've finished downloading
+					currentDownload.status = FDItemStatus.FinishedDownloading;
+				}
+				catch (Exception e)
+				{
+					log.Store(this.ToString(),
+					          "ProcessFileDownload crashed on file: " + currentDownload.path, 
+					          "Exception was: " + e.Message, 
+					          FDLogVerbosity.Error);
+					currentDownload.status = FDItemStatus.Error;
+				}
+				
+				//Add the item to the finished queue
+				finished.Push(currentDownload);
+			}
+		}
+		
+		public void ProcessFileDownload(FDQueueItem item) 
+		{
+			if(item.kind != System.IO.FileAttributes.Normal)
+			{
+				throw new Exception("Recursive downloads aren't supported yet.");
+				return;
+			}
+			Console.WriteLine("Archive ID was: " + item.archiveID);
+			item.glacier = new FDGlacier(settings, log, "download");
+			item.glacier.archiveID = item.archiveID;
+			item.glacier.setCallback(this._downloadProgress);
+			item.glacier.RequestArchive(item.downloadPath);
 		}
 		#endregion
 	}
